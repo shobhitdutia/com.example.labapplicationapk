@@ -31,7 +31,7 @@ public interface JoinInterface extends java.rmi.Remote {
 	 */
 
 	public int addUsersToDatabase(String username,
-			String password, Vector<JTextField> userListVector) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
+			String password, Vector<JTextField> userListVector,String className) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
 	
 	public int deleteUsersFromDatabase(String username,
 			String password, Vector<JTextField> userListVector) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;

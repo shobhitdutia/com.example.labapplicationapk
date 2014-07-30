@@ -63,7 +63,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 
 
 	public int addUsersToDatabase(String username,
-			String password, Vector<JTextField> userListVector) {
+			String password, Vector<JTextField> userListVector, String className) {
 		int success=1;
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -73,18 +73,11 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			        username,
 			        password);
 			Statement stmt = con.createStatement();
-			String pass=null;
-			int uid;
-			for (int i=0;i<userListVector.size();i++) {//JTextField jt:userListVector) {
-				if((i%2)==0)
-					 pass=userListVector.get(i).getText();
-				else {
-					uid=Integer.parseInt(userListVector.get(i).getText());	
-					System.out.println(pass+" "+uid);
-				    if(stmt.executeUpdate("INSERT INTO userlist (uid,pass) VALUES ("+uid+",\""+pass+"\");")==0) {
+			for (int i=0;i<userListVector.size();i++) {
+					String uid=userListVector.get(i).getText();
+				    if(stmt.executeUpdate("INSERT INTO userlist (uid,pass,class_name) VALUES ("+uid+",\""+uid+",\""+className+"\");")==0) {
 				    	success=0;
 				    }
-				}
 			}
 			stmt.close();
 			con.close();
