@@ -25,7 +25,7 @@ import javax.swing.JTextField;
 
 
 public class ControllerServer implements ActionListener, ItemListener {
-	//String username;;
+	//String username;;;;
 	String middlewareIP="localhost";
 	JoinInterface obj;
 	JTextField username;
