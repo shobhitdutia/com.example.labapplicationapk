@@ -313,4 +313,28 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		}
 		return list;	
 	}
+
+	@Override
+	public String getMyClassName(String uid) throws RemoteException {
+		String className=null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Connection con;
+			con = DriverManager.getConnection(
+			        "jdbc:mysql://localhost/radb",
+			        "root",
+			        "mysql");
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery("Select class_name from userlist where uid = "+uid);
+			while(rs.next()){
+				className=rs.getString("class_name");
+			}
+			stmt.close();
+			con.close();
+			System.out.println("Class Name returned");
+		} catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return className;
+	}
 }
