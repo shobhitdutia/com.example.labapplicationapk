@@ -33,6 +33,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 	JTextField username;
 	JPasswordField password;
 	ViewServer v= new ViewServer(this);
+	ViewAddUser viewAddUser=new ViewAddUser(this);
 	ViewLog v1;
 	public ControllerServer() {
 		try {
