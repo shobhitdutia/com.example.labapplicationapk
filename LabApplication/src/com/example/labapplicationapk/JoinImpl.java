@@ -73,15 +73,15 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			        username,
 			        password);
 			Statement stmt = con.createStatement();
-			String uname=null;
+			String pass=null;
 			int uid;
 			for (int i=0;i<userListVector.size();i++) {//JTextField jt:userListVector) {
 				if((i%2)==0)
-					 uname=userListVector.get(i).getText();
+					 pass=userListVector.get(i).getText();
 				else {
 					uid=Integer.parseInt(userListVector.get(i).getText());	
-					System.out.println(uname+" "+uid);
-				    if(stmt.executeUpdate("INSERT INTO userlist (uid,uname) VALUES ("+uid+",\""+uname+"\");")==0) {
+					System.out.println(pass+" "+uid);
+				    if(stmt.executeUpdate("INSERT INTO userlist (uid,pass) VALUES ("+uid+",\""+pass+"\");")==0) {
 				    	success=0;
 				    }
 				}
