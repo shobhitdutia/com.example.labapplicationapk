@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 public class ControllerServer implements ActionListener, ItemListener {
 	//String username;;;;
 	String selectedClass;
+	ViewClassList viewClassList;
 	String middlewareIP="localhost";
 	JoinInterface obj;
 	JTextField username;
@@ -44,26 +45,26 @@ public class ControllerServer implements ActionListener, ItemListener {
 	public void init() {
 		v.showGUI();
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-       // System.out.println(getUsername()+" "+new String(getPassword()));
+		// System.out.println(getUsername()+" "+new String(getPassword()));
 		if(e.getSource() instanceof JButton) {
 			JButton button =(JButton) e.getSource();
 			if(button.getText().equals("Login")) {
-				
+
 				if (isPasswordCorrect(v.username.getText(), v.password.getPassword())) {
 					username=v.username;
 					password=v.password;
 					v.showMainScreen();
-		            username.setText("");
+					username.setText("");
 					password.setText("");
-		        } else {
-		            JOptionPane.showMessageDialog((Component) e.getSource(),
-		                    "Invalid username or password",
-		                    "Login",
-		                    JOptionPane.ERROR_MESSAGE);
-		        }		
+				} else {
+					JOptionPane.showMessageDialog((Component) e.getSource(),
+							"Invalid usernameviewClassList.frame1.setVisible(false); or password",
+							"Login",
+							JOptionPane.ERROR_MESSAGE);
+				}		
 			}
 			else if(button.getText().equals("Clear")) {
 				System.out.println("in clear");
@@ -88,26 +89,14 @@ public class ControllerServer implements ActionListener, ItemListener {
 			}
 			else if(button.getText(	).equals("Send emulator config")) {
 				ViewServer.frame2.setVisible(false);
+
+				viewClassList.setCallingLocation("Send emulator config");
+				viewClassList.showGUI();
+
 				//Code to send emulator config
 				//Path of avd directory
-				String path="C:\\Users\\shobhitdutia\\.android\\avd";
-				System.out.println(path);
-				File f=new File(path);
-				String list[]=f.list();
-				File f1;
-				Vector <File>fileDir=new Vector<File>();
-				for (int i = 0; i < list.length; i++) {
-					list[i]=path+"\\"+list[i]; 				//Add parent directories to list array
-					f1=new File(list[i]);
-					if(f1.isDirectory()) {
-						fileDir.add(f1);						
-					}
-				}
-				for(File f2:fileDir) {
-					System.out.println(f2.getName());
-				}
-				ViewSendEmuConfig.fileDir=fileDir;
-				v.showSendEmuConfig();
+				/**/
+
 			}
 			else if(button.getText().equals("Send selected configuration")) {
 				Vector<JCheckBox> selectedConfig=ViewSendEmuConfig.getCheckedConfig();
@@ -118,12 +107,12 @@ public class ControllerServer implements ActionListener, ItemListener {
 				for(JCheckBox jc:selectedConfig) {
 					if(jc.isSelected())
 						atleastOneSelected=true;
-				}
+				}viewClassList.frame1.setVisible(false);
 				if(!atleastOneSelected) {
 					JOptionPane.showMessageDialog((Component) e.getSource(),
-		                    "Please check atleast 1 value!",
-		                    "ERROR",
-		                    JOptionPane.ERROR_MESSAGE);
+							"Please check atleast 1 value!",
+							"ERROR",
+							JOptionPane.ERROR_MESSAGE);
 				}
 				else {
 					int index=0;
@@ -133,7 +122,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 						}
 						index++;
 					}
-					System.out.println("Selected is ");
+					System.out.println("SelecviewClassList.frame1.setVisible(false);ted is ");
 					for (File f:fileDir) {
 						System.out.println(f.getAbsolutePath());
 					}
@@ -148,25 +137,25 @@ public class ControllerServer implements ActionListener, ItemListener {
 							}
 						}
 					}
-					/*System.out.println("Config pahts:");
+					/*System.out.println("ConviewClassList.frame1.setVisible(false);fig pahts:");
 					for(File f:configFiles) {
 						System.out.println(f.getAbsolutePath());
 					}*/
 					//send config files
-					
+
 					try {
-						
+
 						if(obj.sendEmulatorConfiguration(configFiles)==1) {
 							JOptionPane.showMessageDialog((Component) e.getSource(),
-				                    "Sent successfully",
-				                    "Success",
-				                    JOptionPane.INFORMATION_MESSAGE);
+									"Sent successfully",
+									"Success",
+									JOptionPane.INFORMATION_MESSAGE);
 						}
 					} catch(Exception e1) {
 						JOptionPane.showMessageDialog((Component) e.getSource(),
-			                    "Please check your connection",
-			                    "Connection error",
-			                    JOptionPane.ERROR_MESSAGE);
+								"Please check your connection",
+								"Connection error",
+								JOptionPane.ERROR_MESSAGE);
 					}
 					ViewSendEmuConfig.frame1.setVisible(false);
 					ViewSendEmuConfig.frame1.dispose();
@@ -175,19 +164,52 @@ public class ControllerServer implements ActionListener, ItemListener {
 					ViewServer.frame2.setVisible(true);
 				}
 			}
+			else if(button.getText().equals("Select")) {
+				selectedClass = viewClassList.selectedClass;
+				viewClassList.frame1.setVisible(false);
+				if(viewClassList.callingFrom.equals("Add users")){
+					///////////////
+					///////////////
+					///////////////
+				}else if(viewClassList.callingFrom.equals("Add malware")){
+					v.showMalwarePage("Add");
+				}else if(viewClassList.callingFrom.equals("View log")){
+					v1=new ViewLog(this, obj);
+					v1.showGUI();
+				}else if(viewClassList.callingFrom.equals("Send emulator config")){
+					String path="C:\\Users\\shobhitdutia\\.android\\avd";
+					System.out.println(path);viewClassList.frame1.setVisible(false);
+					File f=new File(path);
+					String list[]=f.list();
+					File f1;
+					Vector <File>fileDir=new Vector<File>();
+					for (int i = 0; i < list.length; i++) {
+						list[i]=path+"\\"+list[i]; 				//Add parent directories to list array
+						f1=new File(list[i]);
+						if(f1.isDirectory()) {
+							fileDir.add(f1);						
+						}viewClassList.frame1.setVisible(false);
+					}
+					for(File f2:fileDir) {
+						System.out.println(f2.getName());
+					}
+					ViewSendEmuConfig.fileDir=fileDir;
+					v.showSendEmuConfig();
+				}
+			}
 			else if(button.getText().equals("Done adding")) {
 				Vector<JTextField> userListVector=ViewAddRemoveUsers.getUserList();
 				//check if list is empty
 				if(userListVector.size()==0) {
 					//
 					JOptionPane.showMessageDialog((Component) e.getSource(),
-		                    "Please add some values to the text box!",
-		                    "EMPTY",
-		                    JOptionPane.ERROR_MESSAGE);
+							"Please add some values to the text box!",
+							"EMPTY",
+							JOptionPane.ERROR_MESSAGE);
 				}
 				else {
 					boolean error=false;
-	//				for(JTextField jt:userListVector) {
+					//				for(JTextField jt:userListVector) {
 					System.out.println("Size of vector "+userListVector.size());
 					for(int i=0;i<userListVector.size();i++) {	
 						JTextField jt=userListVector.get(i);
@@ -208,26 +230,26 @@ public class ControllerServer implements ActionListener, ItemListener {
 					System.out.println(error);
 					if(error)
 						JOptionPane.showMessageDialog((Component) e.getSource(),
-    		                    "Please check your input!",
-    		                    "EMPTY",
-    		                    JOptionPane.ERROR_MESSAGE);
+								"Please check your input!",
+								"EMPTY",
+								JOptionPane.ERROR_MESSAGE);
 					else if(!error) {
-						
+
 						try {
-			
+
 							if(obj.addUsersToDatabase("root", "mysql", userListVector, selectedClass)==1) {
 								JOptionPane.showMessageDialog((Component) e.getSource(),
-					                    "Query Successful!",
-					                    "INSERTED",
-					                    JOptionPane.INFORMATION_MESSAGE);
+										"Query Successful!",
+										"INSERTED",
+										JOptionPane.INFORMATION_MESSAGE);
 								userListVector.removeAllElements();
 								ViewAddRemoveUsers.removeAllTextboxes("Add");
 							}
 							else {
 								JOptionPane.showMessageDialog((Component) e.getSource(),
-					                    "Query Failed! Check your input",
-					                    "EMPTY",
-					                    JOptionPane.INFORMATION_MESSAGE);
+										"Query Failed! Check your input",
+										"EMPTY",
+										JOptionPane.INFORMATION_MESSAGE);
 								userListVector.removeAllElements();
 								ViewAddRemoveUsers.removeAllTextboxes("Add");
 							}
@@ -239,7 +261,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 					}
 				}
 			}
-			
+
 			//
 			else if(button.getText().equals("Done deleting")) {
 				Vector<JTextField> userListVector=ViewAddRemoveUsers.getUserList();
@@ -247,13 +269,13 @@ public class ControllerServer implements ActionListener, ItemListener {
 				if(userListVector.size()==0) {
 					//
 					JOptionPane.showMessageDialog((Component) e.getSource(),
-		                    "Please add some values to the text box!",
-		                    "EMPTY",
-		                    JOptionPane.ERROR_MESSAGE);
+							"Please add some values to the text box!",
+							"EMPTY",
+							JOptionPane.ERROR_MESSAGE);
 				}
 				else {
 					boolean error=false;
-	//				for(JTextField jt:userListVector) {
+					//				for(JTextField jt:userListVector) {
 					for(int i=0;i<userListVector.size();i++) {	
 						JTextField jt=userListVector.get(i);
 						if(i%2!=0) {
@@ -272,32 +294,32 @@ public class ControllerServer implements ActionListener, ItemListener {
 					System.out.println(error);
 					if(error)
 						JOptionPane.showMessageDialog((Component) e.getSource(),
-    		                    "Please check your input!",
-    		                    "EMPTY",
-    		                    JOptionPane.ERROR_MESSAGE);
+								"Please check your input!",
+								"EMPTY",
+								JOptionPane.ERROR_MESSAGE);
 					else if(!error) {
 						String middlewareIP="localhost";
-						
+
 						try {
-							
+
 							if(obj.deleteUsersFromDatabase("root", "mysql", userListVector)==1) {
 								JOptionPane.showMessageDialog((Component) e.getSource(),
-					                    "Query Successful!",
-					                    "Deleted",
-					                    JOptionPane.INFORMATION_MESSAGE);
+										"Query Successful!",
+										"Deleted",
+										JOptionPane.INFORMATION_MESSAGE);
 								userListVector.removeAllElements();
 								ViewAddRemoveUsers.removeAllTextboxes("Remove");
-								
+
 								ViewAddRemoveUsers.frame1.invalidate();
 								refreshUserListAndUpdateGUI(e, "refresh user");
-								
+
 								//v.show("Remove");
 							}
 							else {
 								JOptionPane.showMessageDialog((Component) e.getSource(),
-					                    "Query Failed! Check your input",
-					                    "EMPTY",
-					                    JOptionPane.INFORMATION_MESSAGE);
+										"Query Failed! Check your input",
+										"EMPTY",
+										JOptionPane.INFORMATION_MESSAGE);
 							}
 						} catch (RemoteException
 								| SQLException | InstantiationException
@@ -309,7 +331,10 @@ public class ControllerServer implements ActionListener, ItemListener {
 			}
 			else if(button.getText().equals("Add malware")) {
 				ViewServer.frame2.setVisible(false);
-				v.showMalwarePage("Add");
+
+				//v.showMalwarePage("Add");
+				viewClassList.setCallingLocation("Add malware");
+				viewClassList.showGUI();
 			}
 			else if(button.getText().equals("Back to main")) {
 				ViewAddRemoveMalware.frame1.setVisible(false);
@@ -323,50 +348,52 @@ public class ControllerServer implements ActionListener, ItemListener {
 				if(malwareName.getText()=="") {
 					//
 					JOptionPane.showMessageDialog((Component) e.getSource(),
-		                    "Please add some values to the text box!",
-		                    "EMPTY",
-		                    JOptionPane.ERROR_MESSAGE);
+							"Please add some values to the text box!",
+							"EMPTY",
+							JOptionPane.ERROR_MESSAGE);
 				}
 				else {
-					
+
 					try {
-						 File file=new File(malwareName.getText());
-				         //Defines buffer in which the file will be read
-				         byte buffer[]=new byte[(int)file.length()];
-				         BufferedInputStream inputFileStream=new BufferedInputStream( new FileInputStream(malwareName.getText()));
+						File file=new File(malwareName.getText());
+						//Defines buffer in which the file will be read
+						byte buffer[]=new byte[(int)file.length()];
+						BufferedInputStream inputFileStream=new BufferedInputStream( new FileInputStream(malwareName.getText()));
 						//Reads the file into buffer
-				         System.out.println("Buffer length:"+buffer.length);
-				         inputFileStream.read(buffer,0,buffer.length);
-				         inputFileStream.close();
-				       //  return(buffer);
-					
-				
+						System.out.println("Buffer length:"+buffer.length);
+						inputFileStream.read(buffer,0,buffer.length);
+						inputFileStream.close();
+						//  return(buffer);
+
+
 						if(obj.addMalware(file.getName(),buffer)==1) {
 							JOptionPane.showMessageDialog((Component) e.getSource(),
-				                    "Malware transferred!",
-				                    "SUCCESS",
-				                    JOptionPane.INFORMATION_MESSAGE);
-				           	malwareName.setText("");
+									"Malware transferred!",
+									"SUCCESS",
+									JOptionPane.INFORMATION_MESSAGE);
+							malwareName.setText("");
 						}
 						else {
 							JOptionPane.showMessageDialog((Component) e.getSource(),
-				                    "Could not transfer",
-				                    "ERROR",
-				                    JOptionPane.INFORMATION_MESSAGE);
+									"Could not transfer",
+									"ERROR",
+									JOptionPane.INFORMATION_MESSAGE);
 						}
 					} catch (IOException e1) {
 						JOptionPane.showMessageDialog((Component) e.getSource(),
-			                    "ERROR",
-			                    "File not found",
-			                    JOptionPane.ERROR_MESSAGE);
+								"ERROR",
+								"File not found",
+								JOptionPane.ERROR_MESSAGE);
 						//e1.printStackTrace();
 					}	    						
 				}
 			}
 			else if(button.getText().equals("View log")) {
 				ViewServer.frame2.setVisible(false);
-				v1=new ViewLog(this, obj);
-				v1.showGUI();
+				viewClassList.showGUI();
+				viewClassList.setCallingLocation("View log");
+				//v1=new ViewLog(this, obj);
+				//v1.showGUI();
 			}
 			else if(button.getText().equals("Open")) {
 				v1.selectedfile=(String) v1.listbox.getSelectedValue();
@@ -380,39 +407,39 @@ public class ControllerServer implements ActionListener, ItemListener {
 				ViewServer.frame2.setVisible(true);
 			}
 			else if(button.getText().equals("Back to list")) {
-				
+
 				v1.frame1.setVisible(true);
 				v1.frame2.setVisible(false);
 			}
 		}
-    }
-	
+	}
+
 	private void refreshUserListAndUpdateGUI(ActionEvent e, String queryType) {
 		//Implement this method later
 		//Get the user list from the database
 		Vector userListVector=new Vector();
 		String middlewareIP="localhost";
-		
+
 		try {
-			
+
 			userListVector=obj.getUsersFromDatabase("root", "mysql");
 			if(userListVector.size()!=0) {
 				/*JOptionPane.showMessageDialog((Component) e.getSource(),
 	                    "Query Successful!",
 	                    "Retreived",
 	                    JOptionPane.INFORMATION_MESSAGE);
-				*/System.out.println("retreival successful");
-				
-				System.out.println(userListVector);
-				ViewAddRemoveUsers.setVectorofStudents(userListVector);
-				ViewServer.frame2.setVisible(false);
-				v.showAddRemovePage("Remove");
+				 */System.out.println("retreival successful");
+
+				 System.out.println(userListVector);
+				 ViewAddRemoveUsers.setVectorofStudents(userListVector);
+				 ViewServer.frame2.setVisible(false);
+				 v.showAddRemovePage("Remove");
 			}
 			else if(queryType.equals("delete user")){
 				JOptionPane.showMessageDialog((Component) e.getSource(),
-	                    "Check if the database has any users",
-	                    "ERROR",
-	                    JOptionPane.INFORMATION_MESSAGE);
+						"Check if the database has any users",
+						"ERROR",
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 		} catch (RemoteException
 				| SQLException | InstantiationException
@@ -420,9 +447,9 @@ public class ControllerServer implements ActionListener, ItemListener {
 			//e1.printStackTrace();
 
 			JOptionPane.showMessageDialog((Component) e.getSource(),
-                    "Check your network/database connection",
-                    "ERROR",
-                    JOptionPane.INFORMATION_MESSAGE);
+					"Check your network/database connection",
+					"ERROR",
+					JOptionPane.INFORMATION_MESSAGE);
 		}	
 	}
 	private String getUsername() {
@@ -433,15 +460,15 @@ public class ControllerServer implements ActionListener, ItemListener {
 		boolean isCorrect=true;
 		int length;
 		if (password.length != correctPassword.length) 
-		        isCorrect = false;
+			isCorrect = false;
 		else
-		     for (int i = 0; i < (length=correctPassword.length>password.length?password.length:correctPassword.length); i++) {
-				 System.out.println("compating "+password[i]+"and"+correctPassword[i]); 
-				 if (password[i] != correctPassword[i]) 
-				        isCorrect = false;
-		}
+			for (int i = 0; i < (length=correctPassword.length>password.length?password.length:correctPassword.length); i++) {
+				System.out.println("compating "+password[i]+"and"+correctPassword[i]); 
+				if (password[i] != correctPassword[i]) 
+					isCorrect = false;
+			}
 
-	    //Zero out the password.
+		//Zero out the password.
 		for (int i = 0; i < correctPassword.length; i++) {
 			correctPassword[i]='O';	
 		}
@@ -452,6 +479,6 @@ public class ControllerServer implements ActionListener, ItemListener {
 	}
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		
+
 	}
 }
