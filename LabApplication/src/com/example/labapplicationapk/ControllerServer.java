@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 
 public class ControllerServer implements ActionListener, ItemListener {
 	//String username;;;;
+	String selectedClass;
 	String middlewareIP="localhost";
 	JoinInterface obj;
 	JTextField username;
@@ -214,7 +215,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 						
 						try {
 			
-							if(obj.addUsersToDatabase("root", "mysql", userListVector)==1) {
+							if(obj.addUsersToDatabase("root", "mysql", userListVector, selectedClass)==1) {
 								JOptionPane.showMessageDialog((Component) e.getSource(),
 					                    "Query Successful!",
 					                    "INSERTED",
