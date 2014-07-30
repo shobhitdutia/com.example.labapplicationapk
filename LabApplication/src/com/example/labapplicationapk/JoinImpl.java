@@ -313,6 +313,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		}
 		return list;	
 	}
+	
 
 	@Override
 	public String getMyClassName(String uid) throws RemoteException {
