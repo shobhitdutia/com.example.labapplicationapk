@@ -88,9 +88,6 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		}
 		return success;		
 	}
-	public void test() {
-		
-	}
 	
 	public int deleteUsersFromDatabase(String username,
 			String password, Vector<JTextField> userListVector) {

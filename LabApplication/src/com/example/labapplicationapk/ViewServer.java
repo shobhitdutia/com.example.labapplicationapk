@@ -128,7 +128,6 @@ public class ViewServer extends JFrame {
         contentPane.add(buttonPanel, BorderLayout.CENTER);
 	}	
 	public void showAddRemovePage(String queryType) {
-		
 		addRemoveUserObject=new ViewAddRemoveUsers();
 		if(queryType=="Add")
 			addRemoveUserObject.showAddUserList();
