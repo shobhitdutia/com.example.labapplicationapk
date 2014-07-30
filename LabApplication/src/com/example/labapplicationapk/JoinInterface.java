@@ -45,4 +45,5 @@ public interface JoinInterface extends java.rmi.Remote {
 	public byte[] downloadFile(String fileName) throws RemoteException;
 	public List<String> classes() throws RemoteException;
 	public String getMyClassName(String uid) throws RemoteException;
+	public void addClass(String classname) throws RemoteException;
 }

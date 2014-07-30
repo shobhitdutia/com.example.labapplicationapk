@@ -44,7 +44,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	private static final long serialVersionUID = 1L;
 	static int countOfPeers=0;
 	static Map<Integer, String> ipMap=new HashMap<Integer, String>();
-	
+
 	protected JoinImpl() throws RemoteException {
 		super();
 		// TODO Auto-generated constructor stub
@@ -69,15 +69,15 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			Connection con;
 			con = DriverManager.getConnection(
-			        "jdbc:mysql://localhost/radb",
-			        username,
-			        password);
+					"jdbc:mysql://localhost/radb",
+					username,
+					password);
 			Statement stmt = con.createStatement();
 			for (int i=0;i<userListVector.size();i++) {
-					String uid=userListVector.get(i).getText();
-				    if(stmt.executeUpdate("INSERT INTO userlist (uid,pass,class_name) VALUES ("+uid+",\""+uid+",\""+className+"\");")==0) {
-				    	success=0;
-				    }
+				String uid=userListVector.get(i).getText();
+				if(stmt.executeUpdate("INSERT INTO userlist (uid,pass,class_name) VALUES ("+uid+",\""+uid+",\""+className+"\");")==0) {
+					success=0;
+				}
 			}
 			stmt.close();
 			con.close();
@@ -88,7 +88,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		}
 		return success;		
 	}
-	
+
 	public int deleteUsersFromDatabase(String username,
 			String password, Vector<JTextField> userListVector) {
 		int success=1;
@@ -96,21 +96,21 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			Connection con;
 			con = DriverManager.getConnection(
-			        "jdbc:mysql://localhost/radb",
-			        username,
-			        password);
+					"jdbc:mysql://localhost/radb",
+					username,
+					password);
 			Statement stmt = con.createStatement();
 			String uname=null;	
 			int uid;
 			for (int i=0;i<userListVector.size();i++) {//JTextField jt:userListVector) {
 				if((i%2)==0)
-					 uname=userListVector.get(i).getText();
+					uname=userListVector.get(i).getText();
 				else {
 					uid=Integer.parseInt(userListVector.get(i).getText());		    	
-				    //if(stmt.executeUpdate("DELETE FROM userList where uid="+uid+"AND uname=\'"+uname+"\';")==0) {
+					//if(stmt.executeUpdate("DELETE FROM userList where uid="+uid+"AND uname=\'"+uname+"\';")==0) {
 					if(stmt.executeUpdate("DELETE FROM userList where uid="+uid+";")==0) {
-				    	success=0;
-				    }
+						success=0;
+					}
 				}
 			}
 			stmt.close();
@@ -131,21 +131,21 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			Connection con;
 			con = DriverManager.getConnection(
-			        "jdbc:mysql://localhost/radb",
-			        username,
-			        password);
+					"jdbc:mysql://localhost/radb",
+					username,
+					password);
 			Statement stmt = con.createStatement();
 			ResultSet rs=stmt.executeQuery("Select * from userList");
-			
+
 			while(rs.next()){
 				id=rs.getInt("uid");
 				name=rs.getString("uname");
 				//create 2 text fields with values received from uid and uname
 				//JTextField uidTextField=new JTextField();
-			//	uidTextField.setText(Integer.toString(rs.getInt("uid")));
+				//	uidTextField.setText(Integer.toString(rs.getInt("uid")));
 				userListVector.add(name);
 				//JTextField uNameTextField=new JTextField();
-			//	uNameTextField.setText(rs.getString("uname"));
+				//	uNameTextField.setText(rs.getString("uname"));
 				userListVector.add(id);
 			}
 			stmt.close();
@@ -159,16 +159,16 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 
 	@Override
 	public int addMalware(String fileName, byte[] fileData) throws RemoteException {
-         try {
-        	 File dir = new File("Malwares");
- 			 if(!dir.exists())
- 				dir.mkdir();
-        	 System.out.println("Filename is "+fileName);
-             File file=new File(dir,fileName);
-             BufferedOutputStream outputFile=new BufferedOutputStream(new FileOutputStream(file.getAbsolutePath()));
+		try {
+			File dir = new File("Malwares");
+			if(!dir.exists())
+				dir.mkdir();
+			System.out.println("Filename is "+fileName);
+			File file=new File(dir,fileName);
+			BufferedOutputStream outputFile=new BufferedOutputStream(new FileOutputStream(file.getAbsolutePath()));
 			outputFile.write(fileData,0,fileData.length);
-	         outputFile.flush();
-	         outputFile.close();
+			outputFile.flush();
+			outputFile.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -192,29 +192,29 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 				fw=new FileWriter(f1);
 				System.out.println("Creating file.. ");
 				int c;
-		        while ((c = fr.read()) != -1) {
-		        	fw.write(c);
-		        }
+				while ((c = fr.read()) != -1) {
+					fw.write(c);
+				}
 			}			
 		} finally {
-            if (fr != null) {
-                fr.close();
-            }
-            if (fw!= null) {
-                fw.close();
-            }
-        }
+			if (fr != null) {
+				fr.close();
+			}
+			if (fw!= null) {
+				fw.close();
+			}
+		}
 		return 1;
 	}
 
 	@Override
 	public Vector getEmulatorConfiguration() throws RemoteException,
-			IOException {
+	IOException {
 		Vector configVector=sendFilesToClient("configuration");
 		//File dir=new File("Emulator_Configurations");
 		return configVector;
 	}
-	
+
 	@Override
 	public Vector getMalware() throws IOException {
 		Vector malwareVector=sendFilesToClient("malware");
@@ -231,14 +231,14 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		//adding every odd value as file name and even value as bytes for that file
 		for (int i = 0; i < files.length; i++) {
 			System.out.println(files[i].getAbsolutePath());
-			 byte buffer[]=new byte[(int)files[i].length()];
-	         BufferedInputStream inputFileStream=new BufferedInputStream( new FileInputStream(files[i].getAbsolutePath()));
+			byte buffer[]=new byte[(int)files[i].length()];
+			BufferedInputStream inputFileStream=new BufferedInputStream( new FileInputStream(files[i].getAbsolutePath()));
 			//Reads the file into buffer
-	         System.out.println("Buffer length:"+buffer.length);
-	         inputFileStream.read(buffer,0,buffer.length);
-	         inputFileStream.close();			
-	         configVector.add(files[i].getName());
-	         configVector.add(buffer);
+			System.out.println("Buffer length:"+buffer.length);
+			inputFileStream.read(buffer,0,buffer.length);
+			inputFileStream.close();			
+			configVector.add(files[i].getName());
+			configVector.add(buffer);
 		}
 		return configVector;
 	}
@@ -254,7 +254,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			folder = new File(path);
 		}
 		else{
-	//		new File("/home/stu14/s6/"+user+"/logs").mkdir();
+			//		new File("/home/stu14/s6/"+user+"/logs").mkdir();
 			new File("logs").mkdir();
 			//folder = new File("/home/stu14/s6/"+user+"/logs");
 			folder = new File("logs");
@@ -299,7 +299,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			folder = new File(path);
 		}
 		else{
-	//		new File("/home/stu14/s6/"+user+"/logs").mkdir();
+			//		new File("/home/stu14/s6/"+user+"/logs").mkdir();
 			new File("ISSP").mkdir();
 			//folder = new File("/home/stu14/s6/"+user+"/logs");
 			folder = new File("ISSP");
@@ -321,9 +321,9 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			Connection con;
 			con = DriverManager.getConnection(
-			        "jdbc:mysql://localhost/radb",
-			        "root",
-			        "mysql");
+					"jdbc:mysql://localhost/radb",
+					"root",
+					"mysql");
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery("Select class_name from userlist where uid = "+uid);
 			while(rs.next()){
@@ -336,5 +336,25 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			e.printStackTrace();
 		}
 		return className;
+	}
+
+	@Override
+	public void addClass(String classname) throws RemoteException {
+		String files;
+		//String user= System.getProperty("user.name"); 
+		//String path = "/home/stu14/s6/"+user+"/logs"; 
+		String path = "ISSP"; 
+		File folder;
+		//if(new File("/home/stu14/s6/"+user+"/logs").exists()) {
+		if(new File("ISSP").exists()) {
+			folder = new File(path);
+		}
+		else{
+			//		new File("/home/stu14/s6/"+user+"/logs").mkdir();
+			new File("ISSP").mkdir();
+			//folder = new File("/home/stu14/s6/"+user+"/logs");
+			folder = new File("ISSP");
+		}
+		new File("ISSP"+File.separatorChar+classname).mkdir();
 	}
 }
