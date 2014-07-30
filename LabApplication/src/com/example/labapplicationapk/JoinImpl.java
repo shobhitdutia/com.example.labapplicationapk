@@ -355,6 +355,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			new File("ISSP").mkdir();
 			//folder = new File("/home/stu14/s6/"+user+"/logs");
 			folder = new File("ISSP");
+			
 		}
 		new File("ISSP"+File.separatorChar+classname).mkdir();
 	}
