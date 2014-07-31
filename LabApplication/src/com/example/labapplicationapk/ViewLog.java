@@ -50,7 +50,7 @@ public class ViewLog {
 		final JPanel buttonPanel = new JPanel();
 		List<String> list;
 		try {
-			list = service.files();
+			list = service.files(controllerServer.selectedClass);
 			if(!list.isEmpty()){
 				Collections.sort(list);
 			
@@ -99,7 +99,7 @@ public class ViewLog {
 			JButton backButton=new JButton("Back to list");
 			backButton.addActionListener(controllerServer);
 			
-			byte[] buffer = service.downloadFile(selectedfile);
+			byte[] buffer = service.downloadFile(selectedfile,controllerServer.selectedClass);
 			String data = stringToBytesASCII(buffer);
 			TextArea t = new TextArea(data);
 			t.setBackground(Color.WHITE);

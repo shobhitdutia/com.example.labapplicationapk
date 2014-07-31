@@ -158,8 +158,12 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	}
 
 	@Override
-	public int addMalware(String fileName, byte[] fileData) throws RemoteException {
+	public int addMalware(String fileName, byte[] fileData,String className) throws RemoteException {
 		try {
+			//add it in ISSP/className/Malwares
+			//String userHome = System.getProperty("user.home");
+			//char sep=File.pathSeparatorChar;
+			//File dir = new File(userHome+sep+"ISSP"+sep+className+sep+"Malwares");
 			File dir = new File("Malwares");
 			if(!dir.exists())
 				dir.mkdir();
@@ -177,12 +181,15 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	}
 
 	@Override
-	public int sendEmulatorConfiguration(Vector<File> v)
+	public int sendEmulatorConfiguration(Vector<File> v,String className)
 			throws IOException {
 		FileReader fr=null;
 		FileWriter fw=null;
 		int index=0;
 		try{
+			//String userHome = System.getProperty("user.home");
+			//char sep=File.pathSeparatorChar;
+			//File dir = new File(userHome+sep+"ISSP"+sep+className+sep+"Emulator_Configurations");
 			File dir = new File("Emulator_Configurations");
 			if(!dir.exists())
 				dir.mkdir();
@@ -208,26 +215,33 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	}
 
 	@Override
-	public Vector getEmulatorConfiguration() throws RemoteException,
+	public Vector getEmulatorConfiguration(String className) throws RemoteException,
 	IOException {
-		Vector configVector=sendFilesToClient("configuration");
+		Vector configVector=sendFilesToClient("configuration",className);
 		//File dir=new File("Emulator_Configurations");
 		return configVector;
 	}
 
 	@Override
-	public Vector getMalware() throws IOException {
-		Vector malwareVector=sendFilesToClient("malware");
+	public Vector getMalware(String classname) throws IOException {
+		Vector malwareVector=sendFilesToClient("malware",classname);
 		//File dir=new File("Emulator_Configurations");
 		return malwareVector;
 	}
-	private Vector sendFilesToClient(String queryType) throws IOException {
+	private Vector sendFilesToClient(String queryType,String classname) throws IOException {
 		Vector configVector=new Vector();
 		File[] files;
-		if(queryType.equals("configuration")) 
+		//String userHome = System.getProperty("user.home");
+		//char sep=File.pathSeparatorChar;
+		if(queryType.equals("configuration")) {
+			
+			//File files = new File(userHome+sep+"ISSP"+sep+className+sep+"Emulator_Configurations").listFiles();
 			files= new File("Emulator_Configurations").listFiles();
-		else
+		}
+		else{
+			//File files = new File(userHome+sep+"ISSP"+sep+className+sep+"Malwares").listFiles();
 			files = new File("Malwares").listFiles();
+		}
 		//adding every odd value as file name and even value as bytes for that file
 		for (int i = 0; i < files.length; i++) {
 			System.out.println(files[i].getAbsolutePath());
@@ -243,21 +257,19 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		return configVector;
 	}
 	@Override
-	public List<String> files() throws RemoteException {
+	public List<String> files(String className) throws RemoteException {
 		String files;
-		//String user= System.getProperty("user.name"); 
-		//String path = "/home/stu14/s6/"+user+"/logs"; 
+		//String userHome = System.getProperty("user.home");
+		//char sep=File.pathSeparatorChar;
+		//String path = new File(userHome+sep+"ISSP"+sep+className+sep+"logs");
 		String path = "logs"; 
 		File folder;
-		//if(new File("/home/stu14/s6/"+user+"/logs").exists()) {
-		if(new File("logs").exists()) {
+		if(new File(path).exists()) {
 			folder = new File(path);
 		}
 		else{
-			//		new File("/home/stu14/s6/"+user+"/logs").mkdir();
-			new File("logs").mkdir();
-			//folder = new File("/home/stu14/s6/"+user+"/logs");
-			folder = new File("logs");
+			new File(path).mkdir();
+			folder = new File(path);
 		}
 		File[] listOfFiles = folder.listFiles(); 
 		List<String> list = new ArrayList<String>();
@@ -270,11 +282,12 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	}
 
 	@Override
-	public byte[] downloadFile(String fileName) throws RemoteException {
+	public byte[] downloadFile(String fileName,String classname) throws RemoteException {
 		try {
-			//String user=System.getProperty("user.name");
-			//File file = new File("/home/stu14/s6/"+user+"/logs/"+fileName);
-			File file = new File("logs/"+fileName);
+			String userHome = System.getProperty("user.home");
+			char sep=File.pathSeparatorChar;
+			String path = userHome+sep+"ISSP"+sep+classname+sep+"logs";
+			File file = new File(path+fileName);
 			byte buffer[] = new byte[(int)file.length()];
 			BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
 			input.read(buffer,0,buffer.length);
@@ -290,19 +303,16 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	@Override
 	public List<String> classes() throws RemoteException {
 		String files;
-		//String user= System.getProperty("user.name"); 
-		//String path = "/home/stu14/s6/"+user+"/logs"; 
-		String path = "ISSP"; 
+		String userHome = System.getProperty("user.home");
+		char sep=File.pathSeparatorChar;
+		String path = userHome+sep+"ISSP";
 		File folder;
-		//if(new File("/home/stu14/s6/"+user+"/logs").exists()) {
-		if(new File("ISSP").exists()) {
+		if(new File(path).exists()) {
 			folder = new File(path);
 		}
 		else{
-			//		new File("/home/stu14/s6/"+user+"/logs").mkdir();
-			new File("ISSP").mkdir();
-			//folder = new File("/home/stu14/s6/"+user+"/logs");
-			folder = new File("ISSP");
+			new File(path).mkdir();
+			folder = new File(path);
 		}
 		File[] listOfFiles = folder.listFiles(); 
 		List<String> list = new ArrayList<String>();
@@ -342,20 +352,24 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	@Override
 	public void addClass(String classname) throws RemoteException {
 		String files;
-		//String user= System.getProperty("user.name"); 
-		//String path = "/home/stu14/s6/"+user+"/logs"; 
-		String path = "ISSP"; 
+		String userHome = System.getProperty("user.home");
+		char sep=File.pathSeparatorChar;
+		String path = userHome+sep+"ISSP"; 
 		File folder;
-		//if(new File("/home/stu14/s6/"+user+"/logs").exists()) {
-		if(new File("ISSP").exists()) {
+		if(new File(path).exists()) {
 			folder = new File(path);
 		}
 		else{
+<<<<<<< HEAD
 			//		new File("/home/stu14/s6/"+user+"/logs").mkdir();
 			new File("ISSP").mkdir();
 			//folder = new File("/home/stu14/s6/"+user+"/logs");
 			folder = new File("ISSP");
+=======
+			new File(path).mkdir();
+			folder = new File(path);
+>>>>>>> refs/remotes/origin/master
 		}
-		new File("ISSP"+File.separatorChar+classname).mkdir();
+		new File(path+File.separatorChar+classname).mkdir();
 	}
 }
