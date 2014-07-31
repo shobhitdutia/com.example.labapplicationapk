@@ -152,9 +152,9 @@ public class ControllerClient implements ActionListener {
 		try {
 			obj = (JoinInterface)Naming.lookup("//"+middlewareIP+":12459/Shobhit_bootstrapObject");
 			if(queryType.equals("configuration"))
-				fileVector=obj.getEmulatorConfiguration(); 
+				fileVector=obj.getEmulatorConfiguration(className); 
 			else 
-				fileVector=obj.getMalware(); 
+				fileVector=obj.getMalware(className); 
 		} catch(Exception e1) {
 			exceptionOccured=true;
 			JOptionPane.showMessageDialog((Component) e.getSource(),

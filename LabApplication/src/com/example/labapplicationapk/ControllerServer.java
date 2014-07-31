@@ -145,7 +145,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 
 					try {
 
-						if(obj.sendEmulatorConfiguration(configFiles)==1) {
+						if(obj.sendEmulatorConfiguration(configFiles,selectedClass)==1) {
 							JOptionPane.showMessageDialog((Component) e.getSource(),
 									"Sent successfully",
 									"Success",
@@ -366,7 +366,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 						//  return(buffer);
 
 
-						if(obj.addMalware(file.getName(),buffer)==1) {
+						if(obj.addMalware(file.getName(),buffer,selectedClass)==1) {
 							JOptionPane.showMessageDialog((Component) e.getSource(),
 									"Malware transferred!",
 									"SUCCESS",

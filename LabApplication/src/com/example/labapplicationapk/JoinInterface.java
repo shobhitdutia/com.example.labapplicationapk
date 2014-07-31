@@ -37,12 +37,12 @@ public interface JoinInterface extends java.rmi.Remote {
 			String password, Vector<JTextField> userListVector) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
 	public Vector getUsersFromDatabase(String username,
 			String password) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
-	public int addMalware(String fileName, byte[] buffer) throws java.rmi.RemoteException;
-	public int sendEmulatorConfiguration(Vector<File> v)throws java.rmi.RemoteException, IOException;
-	public Vector getEmulatorConfiguration() throws RemoteException,IOException;
-	public Vector getMalware() throws java.rmi.RemoteException, IOException;
-	public List<String> files() throws RemoteException;
-	public byte[] downloadFile(String fileName) throws RemoteException;
+	public int addMalware(String fileName, byte[] buffer,String classname) throws java.rmi.RemoteException;
+	public int sendEmulatorConfiguration(Vector<File> v,String classname)throws java.rmi.RemoteException, IOException;
+	public Vector getEmulatorConfiguration(String classname) throws RemoteException,IOException;
+	public Vector getMalware(String classname) throws java.rmi.RemoteException, IOException;
+	public List<String> files(String classname) throws RemoteException;
+	public byte[] downloadFile(String fileName,String classname) throws RemoteException;
 	public List<String> classes() throws RemoteException;
 	public String getMyClassName(String uid) throws RemoteException;
 	public void addClass(String classname) throws RemoteException;
