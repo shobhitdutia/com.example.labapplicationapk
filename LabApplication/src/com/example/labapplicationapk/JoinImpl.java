@@ -360,15 +360,12 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			folder = new File(path);
 		}
 		else{
-<<<<<<< HEAD
 			//		new File("/home/stu14/s6/"+user+"/logs").mkdir();
 			new File("ISSP").mkdir();
 			//folder = new File("/home/stu14/s6/"+user+"/logs");
 			folder = new File("ISSP");
-=======
 			new File(path).mkdir();
 			folder = new File(path);
->>>>>>> refs/remotes/origin/master
 		}
 		new File(path+File.separatorChar+classname).mkdir();
 	}
