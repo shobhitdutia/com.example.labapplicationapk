@@ -11,19 +11,22 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
 public class ViewClassList {
 	ControllerServer controllerServer;
+	ControllerServerBackListener csb;
 	JoinInterface service;
-	JFrame frame1;
+	static JFrame frame1;
 	JList<String> listbox;
 	String selectedClass;
 	String callingFrom;
 	
-	public ViewClassList(ControllerServer contoller,JoinInterface service){
+	public ViewClassList(ControllerServer contoller,ControllerServerBackListener csb, JoinInterface service){
 		controllerServer=contoller;
+		this.csb=csb;
 		this.service=service;
 	}
 	
@@ -45,9 +48,12 @@ public class ViewClassList {
 		//labels and text box panel
 		final JPanel inputPanel = new JPanel();
 		final JPanel buttonPanel = new JPanel();
+		final JPanel textPanel = new JPanel();
 		List<String> list;
 		try {
 			list = service.classes();
+			JButton backButton=new JButton("Back");
+			backButton.addActionListener(csb);
 			if(!list.isEmpty()){
 				Collections.sort(list);
 			
@@ -58,18 +64,17 @@ public class ViewClassList {
 				inputPanel.add(listbox,BorderLayout.CENTER);
 
 				JButton openButton=new JButton("Select");
-				JButton backButton=new JButton("Back to Main");
 				openButton.addActionListener(controllerServer);
-				backButton.addActionListener(controllerServer);
 				buttonPanel.add(openButton);
 				buttonPanel.add(backButton);
 				contentPane.add(inputPanel, BorderLayout.NORTH);
 				contentPane.add(buttonPanel, BorderLayout.SOUTH);
 			}else{
-				TextArea t = new TextArea("No logs present");
-				t.setBackground(Color.WHITE);
-				t.setEditable(false);
-				contentPane.add(t);
+				textPanel.setLayout(new GridLayout(2,1));
+				
+				textPanel.add(new JLabel("No files present"));
+				textPanel.add(backButton);
+				contentPane.add(textPanel);
 			}
 
 		} catch (RemoteException e) {

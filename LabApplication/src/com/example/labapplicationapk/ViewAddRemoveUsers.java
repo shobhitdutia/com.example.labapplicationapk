@@ -28,15 +28,17 @@ public class ViewAddRemoveUsers extends JFrame {
     private Box hBox;
     private JButton btnAdd;
     private static Vector <JCheckBox>checkBoxVector;
-    private static Vector vectorOfStudents;
     private static Vector<JTextField> textFieldVector=new Vector<JTextField>();
+    private static Vector vectorOfStudents;
+    
+    /*    private static Vector vectorOfStudents;
     private static Vector<JTextField> userListVector=new Vector<JTextField>();
-	public ViewAddRemoveUsers(String title) {
+*/	public ViewAddRemoveUsers(String title) {
 		super(title);
 	}
 	public ViewAddRemoveUsers() {
 	}
-	public void showAddUserList() {
+	/*public void showAddUserList() {
 		frame1 = new ViewAddRemoveUsers("ADD Users");
         frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame1.addComponentsToAddFrame(frame1.getContentPane());
@@ -44,7 +46,7 @@ public class ViewAddRemoveUsers extends JFrame {
         frame1.setResizable(true);
         frame1.pack();
         frame1.setVisible(true);
-	}
+	}*/
 	public void showRemoveUserList() {
 		frame1 = new ViewAddRemoveUsers("REMOVE Users");
         frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -127,7 +129,7 @@ public class ViewAddRemoveUsers extends JFrame {
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
 	}
-	private void addComponentsToAddFrame(Container contentPane) {
+	/*private void addComponentsToAddFrame(Container contentPane) {
 		vectorOfStudents=new Vector();
 		checkBoxVector=new Vector<JCheckBox>();
 		//Remove this for loop later	
@@ -140,12 +142,12 @@ public class ViewAddRemoveUsers extends JFrame {
 			vectorOfStudents.add(i+1);
 		}
 		
-		/*for (int i = 0; i <= length-2; i+=2) {
+		for (int i = 0; i <= length-2; i+=2) {
 			System.out.println(i+" "+(i+1));
         	textFieldVector.add(new JTextField((String)arrayOfStudents.get(i)));
         	textFieldVector.add(new JTextField(String.valueOf(arrayOfStudents.get(i+1))));
         	System.out.println(i);
-		}*/
+		}
 		//final GridLayout labelGrid=new GridLayout(3, 2);
 		final JPanel labelPanel = new JPanel();
 		labelPanel.setLayout(new GridLayout(3,3));
@@ -201,7 +203,7 @@ public class ViewAddRemoveUsers extends JFrame {
         contentPane.add(vBox, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
-	}
+	}*/
 	public static Vector<JTextField> getUserList() {
 		for (int i = 0; i < checkBoxVector.size(); i++) {
 			JCheckBox jc=checkBoxVector.get(i);
@@ -224,9 +226,9 @@ public class ViewAddRemoveUsers extends JFrame {
 	public static void removeAllTextboxes(String frameName) {	
 		frame1.setVisible(false);
 		frame1.dispose();
-		if(frameName=="Add")
+		/*if(frameName=="Add")
 			new ViewAddRemoveUsers().showAddUserList();
-		else if(frameName=="Remove")
+		else*/ if(frameName=="Remove")
 			new ViewAddRemoveUsers().showRemoveUserList();
 	}
 }

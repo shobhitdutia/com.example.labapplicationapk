@@ -75,7 +75,8 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			Statement stmt = con.createStatement();
 			for (int i=0;i<userListVector.size();i++) {
 				String uid=userListVector.get(i).getText();
-				if(stmt.executeUpdate("INSERT INTO userlist (uid,pass,class_name) VALUES ("+uid+",\""+uid+",\""+className+"\");")==0) {
+				if(stmt.executeUpdate("INSERT INTO userlist VALUES (\""+uid+"\",\""+uid+"\",\""+className+"\");")==0) {
+				//if(stmt.executeUpdate("INSERT INTO userlist (uid,pass) VALUES (\"pqr\",\"pqr\");")==0) {	
 					success=0;
 				}
 			}
@@ -302,29 +303,39 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 
 	@Override
 	public List<String> classes() throws RemoteException {
-		String files;
+		String fileName;
+		/* if linux:
 		String userHome = System.getProperty("user.home");
 		char sep=File.pathSeparatorChar;
-		String path = userHome+sep+"ISSP";
-		File folder;
-		if(new File(path).exists()) {
-			folder = new File(path);
-		}
-		else{
-			new File(path).mkdir();
-			folder = new File(path);
+		String path = userHome+sep+"ISSP";*/
+		//windows:
+		String path="Classes";
+		File folder=new File(path);
+		if(!folder.exists()) {
+			folder.mkdir();
 		}
 		File[] listOfFiles = folder.listFiles(); 
 		List<String> list = new ArrayList<String>();
-		for (int i = 0; i < listOfFiles.length; i++) 
-		{
-			files = listOfFiles[i].getName();
-			list.add(files);
+		//check if there is atleast 1 file present
+		System.out.println("list of files is"+listOfFiles);
+		int fileCount=0;
+		for (File temp : listOfFiles) {
+			fileCount++;
 		}
+		if(fileCount!=0) {
+			for (int i = 0; i < listOfFiles.length; i++) 
+			{
+				System.out.println("In not null");
+				fileName = listOfFiles[i].getName();
+				list.add(fileName);
+			}			
+		}
+//		else {
+//			System.out.println("In no file present");
+//			list.add("No file present");
+//		}
 		return list;	
 	}
-	
-
 	@Override
 	public String getMyClassName(String uid) throws RemoteException {
 		String className=null;

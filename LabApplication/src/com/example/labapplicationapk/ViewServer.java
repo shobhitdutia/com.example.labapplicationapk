@@ -129,8 +129,8 @@ public class ViewServer extends JFrame {
 	}	
 	public void showAddRemovePage(String queryType) {
 		addRemoveUserObject=new ViewAddRemoveUsers();
-		if(queryType=="Add")
-			addRemoveUserObject.showAddUserList();
+		if(queryType=="Add") {}
+//			addRemoveUserObject.showAddUserList();
 		else 
 			addRemoveUserObject.showRemoveUserList();
 	}

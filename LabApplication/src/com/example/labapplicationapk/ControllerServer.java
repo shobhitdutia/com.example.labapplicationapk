@@ -32,9 +32,10 @@ public class ControllerServer implements ActionListener, ItemListener {
 	JoinInterface obj;
 	JTextField username;
 	JPasswordField password;
-	ViewServer v= new ViewServer(this);
-	ViewAddUser viewAddUser=new ViewAddUser(this);
+	ViewServer v;
 	ViewLog v1;
+	ViewAddUser viewAddUser;
+	ControllerServerBackListener csb;
 	public ControllerServer() {
 		try {
 			obj= (JoinInterface)Naming.lookup("//"+middlewareIP+":12459/Shobhit_bootstrapObject");
@@ -42,6 +43,12 @@ public class ControllerServer implements ActionListener, ItemListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		};
+
+		csb=new ControllerServerBackListener(this);
+		v= new ViewServer(this);
+		viewAddUser=new ViewAddUser(this, csb);
+		v1=new ViewLog(this, obj);
+		viewClassList=new ViewClassList(this, csb, obj);
 	}
 	public void init() {
 		v.showGUI();
@@ -75,25 +82,30 @@ public class ControllerServer implements ActionListener, ItemListener {
 				password.setText("");
 			}
 			else if(button.getText().equals("Add users")) {
+				ControllerServerBackListener.backButtoncallingFrom="Add users_1";
 				ViewServer.frame2.setVisible(false);
-				v.showAddRemovePage("Add");
+				//v.showAddRemovePage("Add");
+				//viewAddUser.showGUI();
+				
+				//viewClassList.setCallingLocation("Add users");
+				//viewClassList.showGUI();
+				viewAddUser.showGUI1();
 			}
 			else if(button.getText().equals("Remove users")) {
 				refreshUserListAndUpdateGUI(e, "delete user");
 			}
-			else if(button.getText().equals("Back")) {
+			/*else if(button.getText().equals("Back")) {
 				Vector<JTextField> userListVector=ViewAddRemoveUsers.getUserList();
 				userListVector.removeAllElements();
 				ViewAddRemoveUsers.removeAllTextboxes("");
 				ViewAddRemoveUsers.frame1.setVisible(false);
 				ViewServer.frame2.setVisible(true);
-			}
-			else if(button.getText(	).equals("Send emulator config")) {
+			}*/
+			else if(button.getText().equals("Send emulator config")) {
 				ViewServer.frame2.setVisible(false);
-
 				viewClassList.setCallingLocation("Send emulator config");
 				viewClassList.showGUI();
-
+				
 				//Code to send emulator config
 				//Path of avd directory
 				/**/
@@ -165,41 +177,11 @@ public class ControllerServer implements ActionListener, ItemListener {
 					ViewServer.frame2.setVisible(true);
 				}
 			}
-			else if(button.getText().equals("Select")) {
-				selectedClass = viewClassList.selectedClass;
-				viewClassList.frame1.setVisible(false);
-				if(viewClassList.callingFrom.equals("Add users")){
-					///////////////
-					///////////////
-					///////////////
-				}else if(viewClassList.callingFrom.equals("Add malware")){
-					v.showMalwarePage("Add");
-				}else if(viewClassList.callingFrom.equals("View log")){
-					v1=new ViewLog(this, obj);
-					v1.showGUI();
-				}else if(viewClassList.callingFrom.equals("Send emulator config")){
-					String path="C:\\Users\\shobhitdutia\\.android\\avd";
-					System.out.println(path);viewClassList.frame1.setVisible(false);
-					File f=new File(path);
-					String list[]=f.list();
-					File f1;
-					Vector <File>fileDir=new Vector<File>();
-					for (int i = 0; i < list.length; i++) {
-						list[i]=path+"\\"+list[i]; 				//Add parent directories to list array
-						f1=new File(list[i]);
-						if(f1.isDirectory()) {
-							fileDir.add(f1);						
-						}viewClassList.frame1.setVisible(false);
-					}
-					for(File f2:fileDir) {
-						System.out.println(f2.getName());
-					}
-					ViewSendEmuConfig.fileDir=fileDir;
-					v.showSendEmuConfig();
-				}
-			}
+			
 			else if(button.getText().equals("Done adding")) {
-				Vector<JTextField> userListVector=ViewAddRemoveUsers.getUserList();
+				selectedClass=viewAddUser.newClassName;
+				System.out.println(selectedClass);
+				Vector<JTextField> userListVector=ViewAddUser.getUserList();
 				//check if list is empty
 				if(userListVector.size()==0) {
 					//
@@ -212,7 +194,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 					boolean error=false;
 					//				for(JTextField jt:userListVector) {
 					System.out.println("Size of vector "+userListVector.size());
-					for(int i=0;i<userListVector.size();i++) {	
+					/*for(int i=0;i<userListVector.size();i++) {	
 						JTextField jt=userListVector.get(i);
 						if(i%2!=0) {
 							try {
@@ -227,7 +209,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 							error=true;
 							break;	
 						}
-					}
+					}*/
 					System.out.println(error);
 					if(error)
 						JOptionPane.showMessageDialog((Component) e.getSource(),
@@ -235,7 +217,6 @@ public class ControllerServer implements ActionListener, ItemListener {
 								"EMPTY",
 								JOptionPane.ERROR_MESSAGE);
 					else if(!error) {
-
 						try {
 
 							if(obj.addUsersToDatabase("root", "mysql", userListVector, selectedClass)==1) {
@@ -244,7 +225,10 @@ public class ControllerServer implements ActionListener, ItemListener {
 										"INSERTED",
 										JOptionPane.INFORMATION_MESSAGE);
 								userListVector.removeAllElements();
-								ViewAddRemoveUsers.removeAllTextboxes("Add");
+//								ViewAddRemoveUsers.removeAllTextboxes("Add");
+								ViewAddUser.frame3.setVisible(false);
+								ViewAddUser.frame3.dispose();
+								viewAddUser.showGUI3();
 							}
 							else {
 								JOptionPane.showMessageDialog((Component) e.getSource(),
@@ -252,7 +236,9 @@ public class ControllerServer implements ActionListener, ItemListener {
 										"EMPTY",
 										JOptionPane.INFORMATION_MESSAGE);
 								userListVector.removeAllElements();
-								ViewAddRemoveUsers.removeAllTextboxes("Add");
+								ViewAddUser.frame3.setVisible(false);
+								ViewAddUser.frame3.dispose();
+								viewAddUser.showGUI3();
 							}
 						} catch (RemoteException
 								| SQLException | InstantiationException
@@ -408,9 +394,69 @@ public class ControllerServer implements ActionListener, ItemListener {
 				ViewServer.frame2.setVisible(true);
 			}
 			else if(button.getText().equals("Back to list")) {
-
 				v1.frame1.setVisible(true);
 				v1.frame2.setVisible(false);
+			}
+			else if(button.getText().equals("Select existing class")) {
+				ViewAddUser.frame1.setVisible(false);
+				ControllerServerBackListener.backButtoncallingFrom="Select existing class";
+				viewClassList.setCallingLocation("Add users");
+				viewClassList.showGUI();
+			}
+			else if(button.getText().equals("Add class")) {
+				ViewAddUser.frame1.setVisible(false);
+				ControllerServerBackListener.backButtoncallingFrom="Add class";
+				viewAddUser.showGUI2();
+			}
+			else if(button.getText().equals("Ok")) {
+				ControllerServerBackListener.backButtoncallingFrom="Adding users "
+						+ "to textbox from new class";
+				viewAddUser.setNewClassName();
+				ViewAddUser.frame2.setVisible(false);
+				viewAddUser.showGUI3();
+			}
+			else if(button.getText().equals("Select")) {
+//				selectedClass = viewClassList.selectedClass;
+				ViewClassList.frame1.setVisible(false);
+				if(viewClassList.callingFrom.equals("Add users")){
+					System.out.println("Callin from add users ");
+					///////////////
+					///////////////
+					///////////////
+					//viewAddUser.showGUI1();
+					ControllerServerBackListener.backButtoncallingFrom="Adding users "
+							+ "to textbox from existing class";
+					viewAddUser.setExistingClassName(viewClassList.listbox.getSelectedValue().toString());
+					//ViewAddUser.frame2.setVisible(false);
+					viewAddUser.showGUI3();
+				}else if(viewClassList.callingFrom.equals("Add malware")){
+					v.showMalwarePage("Add");
+				}else if(viewClassList.callingFrom.equals("View log")){
+					
+					v1=new ViewLog(this, obj);
+					v1.showGUI();
+					//viewClassList.setCallingLocation("View log");
+					//viewClassList.showGUI();
+				}else if(viewClassList.callingFrom.equals("Send emulator config")){
+					String path="C:\\Users\\shobhitdutia\\.android\\avd";
+					System.out.println(path);viewClassList.frame1.setVisible(false);
+					File f=new File(path);
+					String list[]=f.list();
+					File f1;
+					Vector <File>fileDir=new Vector<File>();
+					for (int i = 0; i < list.length; i++) {
+						list[i]=path+"\\"+list[i]; 				//Add parent directories to list array
+						f1=new File(list[i]);
+						if(f1.isDirectory()) {
+							fileDir.add(f1);						
+						}viewClassList.frame1.setVisible(false);
+					}
+					for(File f2:fileDir) {
+						System.out.println(f2.getName());
+					}
+					ViewSendEmuConfig.fileDir=fileDir;
+					v.showSendEmuConfig();
+				}
 			}
 		}
 	}
@@ -452,9 +498,6 @@ public class ControllerServer implements ActionListener, ItemListener {
 					"ERROR",
 					JOptionPane.INFORMATION_MESSAGE);
 		}	
-	}
-	private String getUsername() {
-		return username.getText();
 	}
 	private boolean isPasswordCorrect(String username, char[] password) {
 		char[] correctPassword={'l','a','b'};
