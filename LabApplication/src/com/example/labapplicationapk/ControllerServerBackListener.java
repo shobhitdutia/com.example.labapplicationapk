@@ -61,17 +61,39 @@ public class ControllerServerBackListener implements ActionListener {
 					userListVector.removeAllElements();
 					//ViewAddUser.removeAllTextboxes("");
 				}
+				else if(backButtoncallingFrom.equals("Send emulator config_1")) {
+					ViewClassList.frame1.setVisible(false);
+					ViewServer.frame2.setVisible(true);
+				}
+				else if(backButtoncallingFrom.equals("Send emulator config_2")) {
+					ViewSendEmuConfig.frame1.setVisible(false);
+					ViewClassList.frame1.setVisible(true);
+					backButtoncallingFrom="Send emulator config_1";
+				}
+				else if(backButtoncallingFrom.equals("Add malware_1")) {
+					//ViewAddRemoveMalware.frame1.setVisible(false)
+					ViewClassList.frame1.setVisible(false);
+					ViewServer.frame2.setVisible(true);
+				}
+				else if(backButtoncallingFrom.equals("Add malware_2")) {
+					backButtoncallingFrom="Add malware_1";
+					ViewAddRemoveMalware.frame1.setVisible(false);
+					ViewClassList.frame1.setVisible(true);
+					/*ViewClassList.frame1.setVisible(false);
+					ViewServer.frame2.setVisible(true);*/
+				}
 				else if(backButtoncallingFrom.equals("Remove users_1")) {
 					
 				}
-				else if(backButtoncallingFrom.equals("Add malware")) {
-					
+				
+				else if(backButtoncallingFrom.equals("View log_1")) {
+					ViewServer.frame2.setVisible(true);
+					ViewClassList.frame1.setVisible(false);
 				}
-				else if(backButtoncallingFrom.equals("View log")) {
-					
-				}
-				else if(backButtoncallingFrom.equals("Send emulator config")) {
-					
+				else if(backButtoncallingFrom.equals("View log_2")) {
+					ControllerServerBackListener.backButtoncallingFrom="View log_1";
+					ViewClassList.frame1.setVisible(true);
+					ViewLog.frame2.setVisible(false);
 				}
 			}
 		}

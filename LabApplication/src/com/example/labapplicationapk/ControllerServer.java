@@ -33,8 +33,9 @@ public class ControllerServer implements ActionListener, ItemListener {
 	JTextField username;
 	JPasswordField password;
 	ViewServer v;
-	ViewLog v1;
+	ViewLog viewLog;
 	ViewAddUser viewAddUser;
+	ViewSendEmuConfig viewSendEmuConfig;
 	ControllerServerBackListener csb;
 	public ControllerServer() {
 		try {
@@ -47,8 +48,9 @@ public class ControllerServer implements ActionListener, ItemListener {
 		csb=new ControllerServerBackListener(this);
 		v= new ViewServer(this);
 		viewAddUser=new ViewAddUser(this, csb);
-		v1=new ViewLog(this, obj);
+		viewLog=new ViewLog(this,csb, obj);
 		viewClassList=new ViewClassList(this, csb, obj);
+		viewSendEmuConfig=new ViewSendEmuConfig(csb);
 	}
 	public void init() {
 		v.showGUI();
@@ -105,13 +107,15 @@ public class ControllerServer implements ActionListener, ItemListener {
 				ViewServer.frame2.setVisible(false);
 				viewClassList.setCallingLocation("Send emulator config");
 				viewClassList.showGUI();
-				
+				ControllerServerBackListener.backButtoncallingFrom="Send emulator config_1";
 				//Code to send emulator config
 				//Path of avd directory
 				/**/
 
 			}
 			else if(button.getText().equals("Send selected configuration")) {
+				selectedClass=ViewAddUser.newClassName;
+				System.out.println("Configuration class name is "+selectedClass);
 				Vector<JCheckBox> selectedConfig=ViewSendEmuConfig.getCheckedConfig();
 				Vector<File> fileDir=ViewSendEmuConfig.getFileDirOfConfig();
 				//check if list is empty
@@ -157,7 +161,6 @@ public class ControllerServer implements ActionListener, ItemListener {
 					//send config files
 
 					try {
-
 						if(obj.sendEmulatorConfiguration(configFiles,selectedClass)==1) {
 							JOptionPane.showMessageDialog((Component) e.getSource(),
 									"Sent successfully",
@@ -179,7 +182,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 			}
 			
 			else if(button.getText().equals("Done adding")) {
-				selectedClass=viewAddUser.newClassName;
+				selectedClass=ViewAddUser.newClassName;
 				System.out.println(selectedClass);
 				Vector<JTextField> userListVector=ViewAddUser.getUserList();
 				//check if list is empty
@@ -318,16 +321,18 @@ public class ControllerServer implements ActionListener, ItemListener {
 			}
 			else if(button.getText().equals("Add malware")) {
 				ViewServer.frame2.setVisible(false);
-
+				ControllerServerBackListener.backButtoncallingFrom="Add malware_1";
 				//v.showMalwarePage("Add");
 				viewClassList.setCallingLocation("Add malware");
 				viewClassList.showGUI();
 			}
-			else if(button.getText().equals("Back to main")) {
+		/*	else if(button.getText().equals("Back to main")) {
 				ViewAddRemoveMalware.frame1.setVisible(false);
 				ViewServer.frame2.setVisible(true);
-			}
+			}*/
 			else if(button.getText().equals("Done adding malware")) {
+				selectedClass=ViewAddUser.newClassName;
+				System.out.println("Add malware selected class is "+selectedClass);
 				//JFileChooser jc=ViewAddRemoveMalware.getFileChooserObject();
 				JTextField malwareName=ViewAddRemoveMalware.getMalwareTextField();
 				System.out.println(malwareName.getText());
@@ -376,26 +381,23 @@ public class ControllerServer implements ActionListener, ItemListener {
 				}
 			}
 			else if(button.getText().equals("View log")) {
+				ControllerServerBackListener.backButtoncallingFrom="View log_1";
 				ViewServer.frame2.setVisible(false);
-				viewClassList.showGUI();
 				viewClassList.setCallingLocation("View log");
+				viewClassList.showGUI();
 				//v1=new ViewLog(this, obj);
 				//v1.showGUI();
 			}
 			else if(button.getText().equals("Open")) {
-				v1.selectedfile=(String) v1.listbox.getSelectedValue();
-				v1.frame1.setVisible(false);
-				v1.showFile();
+				ViewLog.frame1.setVisible(false);
+				viewLog.selectedfile=(String) viewLog.listbox.getSelectedValue();
+				ViewLog.frame1.setVisible(false);
+				viewLog.showFile();
 			}
-			else if(button.getText().equals("Back to Main")) {
-				//v1.frame1.setVisible(true);
-				//v1.showFile();
-				v1.frame1.setVisible(false);
-				ViewServer.frame2.setVisible(true);
-			}
+			
 			else if(button.getText().equals("Back to list")) {
-				v1.frame1.setVisible(true);
-				v1.frame2.setVisible(false);
+				viewLog.frame1.setVisible(true);
+				viewLog.frame2.setVisible(false);
 			}
 			else if(button.getText().equals("Select existing class")) {
 				ViewAddUser.frame1.setVisible(false);
@@ -430,16 +432,21 @@ public class ControllerServer implements ActionListener, ItemListener {
 					//ViewAddUser.frame2.setVisible(false);
 					viewAddUser.showGUI3();
 				}else if(viewClassList.callingFrom.equals("Add malware")){
+					ControllerServerBackListener.backButtoncallingFrom="Add malware_2";
+					viewAddUser.setExistingClassName(viewClassList.listbox.getSelectedValue().toString());
 					v.showMalwarePage("Add");
 				}else if(viewClassList.callingFrom.equals("View log")){
-					
-					v1=new ViewLog(this, obj);
-					v1.showGUI();
+					ControllerServerBackListener.backButtoncallingFrom="View log_2";
+					viewLog.setClassName(viewClassList.listbox.getSelectedValue().toString());
+					viewLog.showGUI();
 					//viewClassList.setCallingLocation("View log");
 					//viewClassList.showGUI();
 				}else if(viewClassList.callingFrom.equals("Send emulator config")){
+					viewAddUser.setExistingClassName(viewClassList.listbox.getSelectedValue().toString());
+					ControllerServerBackListener.backButtoncallingFrom="Send emulator config_2";
 					String path="C:\\Users\\shobhitdutia\\.android\\avd";
-					System.out.println(path);viewClassList.frame1.setVisible(false);
+					System.out.println(path);
+					ViewClassList.frame1.setVisible(false);
 					File f=new File(path);
 					String list[]=f.list();
 					File f1;
@@ -449,13 +456,14 @@ public class ControllerServer implements ActionListener, ItemListener {
 						f1=new File(list[i]);
 						if(f1.isDirectory()) {
 							fileDir.add(f1);						
-						}viewClassList.frame1.setVisible(false);
+						}
+						ViewClassList.frame1.setVisible(false);	
 					}
 					for(File f2:fileDir) {
 						System.out.println(f2.getName());
 					}
 					ViewSendEmuConfig.fileDir=fileDir;
-					v.showSendEmuConfig();
+					viewSendEmuConfig.showConfiguration();
 				}
 			}
 		}

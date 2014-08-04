@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.rmi.Naming;
@@ -65,6 +66,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	public int addUsersToDatabase(String username,
 			String password, Vector<JTextField> userListVector, String className) {
 		int success=1;
+		FileWriter fw=null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			Connection con;
@@ -73,20 +75,42 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 					username,
 					password);
 			Statement stmt = con.createStatement();
+			
+			File dir = new File("Classes");
+			if(!dir.exists())
+				dir.mkdir();
+			System.out.println("Filename is "+className);
+			File classFile=new File(dir,className+".txt");	
+			classFile.createNewFile();
+			fw=new FileWriter(classFile, true);
 			for (int i=0;i<userListVector.size();i++) {
 				String uid=userListVector.get(i).getText();
 				if(stmt.executeUpdate("INSERT INTO userlist VALUES (\""+uid+"\",\""+uid+"\",\""+className+"\");")==0) {
 				//if(stmt.executeUpdate("INSERT INTO userlist (uid,pass) VALUES (\"pqr\",\"pqr\");")==0) {	
 					success=0;
 				}
+				fw.write(uid);
+				fw.write(System.getProperty("line.separator"));
 			}
 			stmt.close();
 			con.close();
+			  
 			System.out.println("Inserted successfully");
-		} catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+		} catch (SQLException | InstantiationException | IllegalAccessException 
+				| ClassNotFoundException| IOException e ) {
 			e.printStackTrace();
 			success=0;
-		}
+		}finally {
+			if (fw!= null) {
+				try {
+					fw.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		  }
+		
 		return success;		
 	}
 
@@ -165,9 +189,11 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			//String userHome = System.getProperty("user.home");
 			//char sep=File.pathSeparatorChar;
 			//File dir = new File(userHome+sep+"ISSP"+sep+className+sep+"Malwares");
-			File dir = new File("Malwares");
+			System.out.println("Add malware class name is "+className);
+			File dir = new File("Malwares\\"+className);
+//			new File("C:\\Directory2\\Sub2\\Sub-Sub2").mkdirs()
 			if(!dir.exists())
-				dir.mkdir();
+				dir.mkdirs();
 			System.out.println("Filename is "+fileName);
 			File file=new File(dir,fileName);
 			BufferedOutputStream outputFile=new BufferedOutputStream(new FileOutputStream(file.getAbsolutePath()));
@@ -191,9 +217,12 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			//String userHome = System.getProperty("user.home");
 			//char sep=File.pathSeparatorChar;
 			//File dir = new File(userHome+sep+"ISSP"+sep+className+sep+"Emulator_Configurations");
-			File dir = new File("Emulator_Configurations");
-			if(!dir.exists())
-				dir.mkdir();
+			File dir = new File("Emulator Configuration\\"+className);
+			
+			if(!dir.exists()) {
+				System.out.println("Making dirs");
+				dir.mkdirs();				
+			}
 			for (File f:v) {
 				fr=new FileReader(f);
 				File f1=new File(dir,"config_ini_"+(index++)+".ini");
@@ -211,7 +240,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 			if (fw!= null) {
 				fw.close();
 			}
-		}
+		  }
 		return 1;
 	}
 
@@ -258,19 +287,15 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		return configVector;
 	}
 	@Override
-	public List<String> files(String className) throws RemoteException {
+	public List<String> getLogs(String className) throws RemoteException {
 		String files;
 		//String userHome = System.getProperty("user.home");
 		//char sep=File.pathSeparatorChar;
 		//String path = new File(userHome+sep+"ISSP"+sep+className+sep+"logs");
-		String path = "logs"; 
-		File folder;
-		if(new File(path).exists()) {
-			folder = new File(path);
-		}
-		else{
-			new File(path).mkdir();
-			folder = new File(path);
+		String path = "Logs/"+className; 
+		File folder=new File(path);
+		if(!folder.exists()) {
+			folder.mkdirs();
 		}
 		File[] listOfFiles = folder.listFiles(); 
 		List<String> list = new ArrayList<String>();
@@ -283,12 +308,18 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	}
 
 	@Override
-	public byte[] downloadFile(String fileName,String classname) throws RemoteException {
+	public byte[] downloadFile(String fileName,String className) throws RemoteException {
 		try {
-			String userHome = System.getProperty("user.home");
+			/*String userHome = System.getProperty("user.home");
 			char sep=File.pathSeparatorChar;
-			String path = userHome+sep+"ISSP"+sep+classname+sep+"logs";
+			String path = userHome+sep+"ISSP"+sep+className+sep+"Logs";
 			File file = new File(path+fileName);
+			*/
+			File dir = new File("Logs\\"+className);
+//			new File("C:\\Directory2\\Sub2\\Sub-Sub2").mkdirs()
+			if(!dir.exists())
+				dir.mkdirs();
+			File file = new File(dir, fileName);
 			byte buffer[] = new byte[(int)file.length()];
 			BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
 			input.read(buffer,0,buffer.length);
@@ -302,7 +333,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 	}
 
 	@Override
-	public List<String> classes() throws RemoteException {
+	public List<String> getClasses() throws RemoteException {
 		String fileName;
 		/* if linux:
 		String userHome = System.getProperty("user.home");
@@ -314,19 +345,33 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		if(!folder.exists()) {
 			folder.mkdir();
 		}
-		File[] listOfFiles = folder.listFiles(); 
+		//selecting files with only .txt extension
+		File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+	        @Override
+	        public boolean accept(File dir, String name) {
+	            return name.toLowerCase().endsWith(".txt");
+	        }
+	    }); 
 		List<String> list = new ArrayList<String>();
 		//check if there is atleast 1 file present
 		System.out.println("list of files is"+listOfFiles);
 		int fileCount=0;
 		for (File temp : listOfFiles) {
 			fileCount++;
+			System.out.println("Name is ");
+			temp.getName();
 		}
 		if(fileCount!=0) {
 			for (int i = 0; i < listOfFiles.length; i++) 
 			{
 				System.out.println("In not null");
 				fileName = listOfFiles[i].getName();
+				//catching exception if file does not contain a "."
+				try{
+					fileName=fileName.substring(0,fileName.lastIndexOf("."));
+				} catch(StringIndexOutOfBoundsException e) {
+					fileName = listOfFiles[i].getName();
+				}
 				list.add(fileName);
 			}			
 		}

@@ -23,7 +23,7 @@ public class ViewServer extends JFrame {
 	static JFrame frame2;
 	ViewAddRemoveUsers addRemoveUserObject;
 	ViewAddRemoveMalware addRemoveMalwareObject;
-	ViewSendEmuConfig sendEmuConfig;
+	//ViewSendEmuConfig sendEmuConfig;
 	Dimension d=new Dimension(100,50);
 	ControllerServer cs;
 	public ViewServer(ControllerServer controllerServer) {
@@ -135,15 +135,15 @@ public class ViewServer extends JFrame {
 			addRemoveUserObject.showRemoveUserList();
 	}
 	public void showMalwarePage(String queryType) {
-		addRemoveMalwareObject=new ViewAddRemoveMalware();
+		addRemoveMalwareObject=new ViewAddRemoveMalware(new ControllerServerBackListener(cs));
 		if(queryType=="Add")
 			addRemoveMalwareObject.showAddMalwareList();
 		else 
 			addRemoveMalwareObject.showRemoveMalwareList();;
 	}
 
-	public void showSendEmuConfig() {
+	/*public void showSendEmuConfig() {
 		sendEmuConfig=new ViewSendEmuConfig();
-		sendEmuConfig.showAddMalwareList();
-	}
+		sendEmuConfig.showConfiguration();
+	}*/
 }

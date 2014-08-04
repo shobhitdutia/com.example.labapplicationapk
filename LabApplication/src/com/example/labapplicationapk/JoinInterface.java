@@ -41,9 +41,9 @@ public interface JoinInterface extends java.rmi.Remote {
 	public int sendEmulatorConfiguration(Vector<File> v,String classname)throws java.rmi.RemoteException, IOException;
 	public Vector getEmulatorConfiguration(String classname) throws RemoteException,IOException;
 	public Vector getMalware(String classname) throws java.rmi.RemoteException, IOException;
-	public List<String> files(String classname) throws RemoteException;
+	public List<String> getLogs(String classname) throws RemoteException;
 	public byte[] downloadFile(String fileName,String classname) throws RemoteException;
-	public List<String> classes() throws RemoteException;
+	public List<String> getClasses() throws RemoteException;
 	public String getMyClassName(String uid) throws RemoteException;
 	public void addClass(String classname) throws RemoteException;
 }

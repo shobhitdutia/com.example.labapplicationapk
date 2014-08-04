@@ -16,20 +16,23 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-public class ViewSendEmuConfig extends JFrame {
-	static ViewSendEmuConfig frame1;
+public class ViewSendEmuConfig{
+	static JFrame frame1;
 	static Vector<File> fileDir;
 	static Vector<JCheckBox> checkedConfigVector;
 	private JCheckBox jc;
-	public ViewSendEmuConfig() {
+	ControllerServerBackListener csb;
+	
+	public ViewSendEmuConfig(ControllerServerBackListener csb) {
+		this.csb=csb;
 	}
-	public ViewSendEmuConfig(String title) {
+/*	public ViewSendEmuConfig(String title) {
 		super(title);
-	}
-	public void showAddMalwareList() {
-		frame1 = new ViewSendEmuConfig("Select Configuration");
+	}*/
+	public void showConfiguration() {
+		frame1 = new JFrame("Select Configuration");
         frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame1.addComponentsToAddFrame(frame1.getContentPane());
+        addComponentsToAddFrame(frame1.getContentPane());
         frame1.setLocationRelativeTo(null);
         frame1.setResizable(false);
         frame1.pack();
@@ -51,8 +54,9 @@ public class ViewSendEmuConfig extends JFrame {
 		final JPanel buttonPanel = new JPanel();
 	 	JButton sendConfig= new JButton("Send selected configuration");
 		sendConfig.addActionListener(new ControllerServer());
-		JButton backButton= new JButton("Go back");
-		backButton.addActionListener(new ActionListener() {
+		JButton backButton= new JButton("Back");
+		backButton.addActionListener(csb);
+		/*backButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -62,7 +66,7 @@ public class ViewSendEmuConfig extends JFrame {
 				ViewSendEmuConfig.checkedConfigVector.removeAllElements();
 				ViewServer.frame2.setVisible(true);
 			}
-		});
+		});*/
 		buttonPanel.add(sendConfig);
 		buttonPanel.add(backButton);
         

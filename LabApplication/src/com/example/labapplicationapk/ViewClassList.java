@@ -49,9 +49,10 @@ public class ViewClassList {
 		final JPanel inputPanel = new JPanel();
 		final JPanel buttonPanel = new JPanel();
 		final JPanel textPanel = new JPanel();
+		
 		List<String> list;
 		try {
-			list = service.classes();
+			list = service.getClasses();
 			JButton backButton=new JButton("Back");
 			backButton.addActionListener(csb);
 			if(!list.isEmpty()){
@@ -63,16 +64,17 @@ public class ViewClassList {
 				buttonPanel.setLayout(new GridLayout(1,2));
 				inputPanel.add(listbox,BorderLayout.CENTER);
 
-				JButton openButton=new JButton("Select");
-				openButton.addActionListener(controllerServer);
-				buttonPanel.add(openButton);
+				JButton selectButton=new JButton("Select");
+				selectButton.addActionListener(controllerServer);
+				buttonPanel.add(selectButton);
 				buttonPanel.add(backButton);
-				contentPane.add(inputPanel, BorderLayout.NORTH);
-				contentPane.add(buttonPanel, BorderLayout.SOUTH);
+				contentPane.add(new JLabel("Please select a class"), BorderLayout.PAGE_START);
+				contentPane.add(inputPanel, BorderLayout.CENTER);
+				contentPane.add(buttonPanel, BorderLayout.PAGE_END);
 			}else{
 				textPanel.setLayout(new GridLayout(2,1));
 				
-				textPanel.add(new JLabel("No files present"));
+				textPanel.add(new JLabel("No files present. Please add a class first!"));
 				textPanel.add(backButton);
 				contentPane.add(textPanel);
 			}

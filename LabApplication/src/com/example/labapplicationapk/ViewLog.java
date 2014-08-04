@@ -24,14 +24,17 @@ import javax.swing.JPanel;
 
 public class ViewLog {
 	ControllerServer controllerServer;
+	ControllerServerBackListener csb;
 	JoinInterface service;
-	JFrame frame1,frame2;
+	static JFrame frame1,frame2;
 	JList<String> listbox;
 	String selectedfile;
+	String className;
 
-	public ViewLog(ControllerServer contoller, JoinInterface service) {
+	public ViewLog(ControllerServer contoller, ControllerServerBackListener csb, JoinInterface service) {
 		controllerServer=contoller;
 		this.service=service;
+		this.csb=csb;
 	}
 
 	public void showGUI() {
@@ -50,10 +53,10 @@ public class ViewLog {
 		final JPanel buttonPanel = new JPanel();
 		List<String> list;
 		try {
-			list = service.files(controllerServer.selectedClass);
+			list = service.getLogs(className);
 			if(!list.isEmpty()){
 				Collections.sort(list);
-			
+				System.out.println("in if");
 				listbox = new JList( list.toArray());
 			
 				inputPanel.setLayout( new BorderLayout() );
@@ -61,18 +64,27 @@ public class ViewLog {
 				inputPanel.add(listbox,BorderLayout.CENTER);
 
 				JButton openButton=new JButton("Open");
-				JButton backButton=new JButton("Back to Main");
+				JButton backButton=new JButton("Back");
 				openButton.addActionListener(controllerServer);
-				backButton.addActionListener(controllerServer);
+				backButton.addActionListener(csb);
 				buttonPanel.add(openButton);
 				buttonPanel.add(backButton);
 				contentPane.add(inputPanel, BorderLayout.NORTH);
 				contentPane.add(buttonPanel, BorderLayout.SOUTH);
 			}else{
-				TextArea t = new TextArea("No logs present");
+				System.out.println("in else");
+				/*TextArea t = new TextArea("No logs present");
 				t.setBackground(Color.WHITE);
 				t.setEditable(false);
-				contentPane.add(t);
+				*/
+				buttonPanel.setLayout(new GridLayout(1,1));
+				
+				JButton backButton=new JButton("Back");
+				backButton.addActionListener(csb);
+				buttonPanel.add(backButton);
+				
+				contentPane.add(new JLabel("No logs present"), BorderLayout.NORTH);
+				contentPane.add(buttonPanel, BorderLayout.SOUTH);
 			}
 
 		} catch (RemoteException e) {
@@ -81,29 +93,33 @@ public class ViewLog {
 	}
 
 	public void showFile() {
-		frame1.setVisible(false);
+		
 		frame2 = new JFrame(selectedfile);
 		frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		addComponents(frame2.getContentPane());
+		addComponentsToShowFile(frame2.getContentPane());
 		frame2.setLocationRelativeTo(null);
 		frame2.setResizable(false);
 		frame2.pack();
 		frame2.setVisible(true);
 	}
 
-	private void addComponents(Container contentPane) {
-
+	private void addComponentsToShowFile(Container contentPane) {
 		try {
 			final JPanel buttonPanel = new JPanel();
 			buttonPanel.setLayout(new GridLayout(1,2));
-			JButton backButton=new JButton("Back to list");
-			backButton.addActionListener(controllerServer);
-			
-			byte[] buffer = service.downloadFile(selectedfile,controllerServer.selectedClass);
+			JButton backButton=new JButton("Back");
+			backButton.addActionListener(csb);
+			System.out.println("Selected file is "+selectedfile+" selected class is "+className);
+			byte[] buffer = service.downloadFile(selectedfile, className);
 			String data = stringToBytesASCII(buffer);
 			TextArea t = new TextArea(data);
 			t.setBackground(Color.WHITE);
 			t.setEditable(false);
+			
+			JButton openButton=new JButton("Open");
+			openButton.addActionListener(controllerServer);
+			
+			contentPane.add(openButton);
 			contentPane.add(t);
 			
 			buttonPanel.add(backButton);
@@ -121,5 +137,8 @@ public class ViewLog {
 		}
 		String toreturn= new String(b);
 		return toreturn;
+	}
+	public void setClassName(String className){
+		this.className=className;
 	}
 }
