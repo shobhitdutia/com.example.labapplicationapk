@@ -425,4 +425,40 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		}
 		new File(path+File.separatorChar+classname).mkdir();
 	}
+
+	@Override
+	public String changePassword(String uid, String oldPassword,
+			String newPassword) {
+		String result = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Connection con;
+			con = DriverManager.getConnection(
+					"jdbc:mysql://localhost/radb",
+					"root",
+					"mysql");
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery("Select \""+uid+"\" from inst_list where pass = \""+oldPassword+"\";");
+			if(!rs.isBeforeFirst()){
+				result="No such user name/password combination";
+			}
+			else {
+				if(stmt.executeUpdate("UPDATE inst_list SET pass=\""+newPassword+"\" where uid=\""+uid+"\" and pass=\""+oldPassword+"\";")==0) {
+				//if(stmt.executeUpdate("UPDATE inst_list SET pass=\'newPassword\' where uid=\'lab\' and pass=\'lab\';")==0) {
+			//	if(stmt.executeUpdate("INSERT INTO userlist VALUES (\""+uid+"\",\""+uid+"\",\""+newPassword+"\");")==0) {	
+				result="error";
+				}
+				else {
+					result="success";
+				}
+			}
+			System.out.println("result is "+result);
+			 	
+			stmt.close();
+			con.close();
+		} catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 }

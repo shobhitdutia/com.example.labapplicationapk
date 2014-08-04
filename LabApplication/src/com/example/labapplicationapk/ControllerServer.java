@@ -22,6 +22,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.text.View;
 
 
 public class ControllerServer implements ActionListener, ItemListener {
@@ -36,6 +37,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 	ViewLog viewLog;
 	ViewAddUser viewAddUser;
 	ViewSendEmuConfig viewSendEmuConfig;
+	ViewChangePassword viewcp;
 	ControllerServerBackListener csb;
 	public ControllerServer() {
 		try {
@@ -51,6 +53,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 		viewLog=new ViewLog(this,csb, obj);
 		viewClassList=new ViewClassList(this, csb, obj);
 		viewSendEmuConfig=new ViewSendEmuConfig(csb);
+		viewcp=new ViewChangePassword(this, csb);
 	}
 	public void init() {
 		v.showGUI();
@@ -197,9 +200,9 @@ public class ControllerServer implements ActionListener, ItemListener {
 					boolean error=false;
 					//				for(JTextField jt:userListVector) {
 					System.out.println("Size of vector "+userListVector.size());
-					/*for(int i=0;i<userListVector.size();i++) {	
+					for(int i=0;i<userListVector.size();i++) {	
 						JTextField jt=userListVector.get(i);
-						if(i%2!=0) {
+						/*if(i%2!=0) {
 							try {
 								Integer.parseInt(jt.getText());
 							} catch(NumberFormatException e1) {
@@ -207,12 +210,12 @@ public class ControllerServer implements ActionListener, ItemListener {
 								error=true;
 								break;
 							}
-						}
+						}*/
 						if(jt.getText().equals("")) {
 							error=true;
 							break;	
 						}
-					}*/
+					}
 					System.out.println(error);
 					if(error)
 						JOptionPane.showMessageDialog((Component) e.getSource(),
@@ -465,6 +468,42 @@ public class ControllerServer implements ActionListener, ItemListener {
 					ViewSendEmuConfig.fileDir=fileDir;
 					viewSendEmuConfig.showConfiguration();
 				}
+			}
+			else if(button.getText().equals("Change password")) {
+				ControllerServerBackListener.backButtoncallingFrom="Change password";
+				ViewServer.frame2.setVisible(false);
+				viewcp.showGUI();
+			}
+			else if(button.getText().equals("Change!")) {
+				Vector<JTextField> textFieldVector=viewcp.getInputVector();
+				String result = null;
+				boolean error=false;
+				for(JTextField inputField:textFieldVector) {
+					if(inputField.getText().toString()=="") {
+						error=true;
+						break;
+					}	
+				}
+				if(error) {
+					JOptionPane.showMessageDialog((Component) e.getSource(),
+							"Please enter values into all textfields",
+							"Empty text fields",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					try {
+						result=obj.changePassword(textFieldVector.get(0).getText().toString(),
+								textFieldVector.get(1).getText().toString(), 
+								textFieldVector.get(2).getText().toString());
+					} catch (RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				JOptionPane.showMessageDialog((Component) e.getSource(),
+						result,
+						"Result",
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 	}

@@ -95,6 +95,10 @@ public class ControllerServerBackListener implements ActionListener {
 					ViewClassList.frame1.setVisible(true);
 					ViewLog.frame2.setVisible(false);
 				}
+				else if(backButtoncallingFrom.equals("Change password")) {
+					ViewServer.frame2.setVisible(true);
+					ViewChangePassword.frame1.setVisible(false);
+				}
 			}
 		}
 	}
