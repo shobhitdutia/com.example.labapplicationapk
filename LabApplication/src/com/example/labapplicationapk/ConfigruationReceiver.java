@@ -3,6 +3,11 @@ import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,15 +34,37 @@ public class ConfigruationReceiver implements Runnable{
 			connectionSocket.close();
 			System.out.println("Writing to file");
             
-			username=state.user_name;
 			userid=state.user_id;
-			System.out.println(username+" "+userid);
-
+			System.out.println(userid);
+			String className=null;
+			try {
+				Class.forName("com.mysql.jdbc.Driver").newInstance();
+				Connection con;
+				con = DriverManager.getConnection(
+						"jdbc:mysql://localhost/radb",
+						"root",
+						"mysql");
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery("Select class_name from userlist where uid = "+userid);
+				while(rs.next()){
+					className=rs.getString("class_name");
+				}
+				stmt.close();
+				con.close();
+				System.out.println("Class Name returned");
+			} catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			
+			String userHome = System.getProperty("user.home");
+			char sep=File.pathSeparatorChar;
+			String path = userHome+sep+"ISSP";
+			
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
             Date date = new Date();
             String dateString = dateFormat.format(date).toString();
             System.out.println(dateString);
-			File f=new File(username+userid+" "+dateString+".txt");
+			File f=new File(path+userid+" "+dateString+".txt");
 			f.createNewFile();
 	//		PrintWriter writer = new PrintWriter("//path//"+username+userid+"config.txt", "UTF-8");
 			PrintWriter writer = new PrintWriter(f);		
