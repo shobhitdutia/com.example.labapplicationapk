@@ -461,4 +461,27 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		}
 		return result;
 	}
+
+	@Override
+	public int addInstructor(String instId) throws RemoteException {
+		int success=1;
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Connection con;
+			con = DriverManager.getConnection(
+					"jdbc:mysql://localhost/radb",
+					"root",
+					"mysql");
+			Statement stmt = con.createStatement();
+			if(stmt.executeUpdate("INSERT INTO inst_list VALUES (\""+instId+"\",\""+instId+"\");")==0) {
+					success=0;
+			}
+			System.out.println("success is "+success);		 	
+			stmt.close();
+			con.close();
+		} catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return success;
+	}
 }

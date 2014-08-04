@@ -1,5 +1,6 @@
 package com.example.labapplicationapk;
 import java.awt.Component;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -38,6 +39,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 	ViewAddUser viewAddUser;
 	ViewSendEmuConfig viewSendEmuConfig;
 	ViewChangePassword viewcp;
+	ViewAddInstructor viewAddInstructor;
 	ControllerServerBackListener csb;
 	public ControllerServer() {
 		try {
@@ -54,6 +56,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 		viewClassList=new ViewClassList(this, csb, obj);
 		viewSendEmuConfig=new ViewSendEmuConfig(csb);
 		viewcp=new ViewChangePassword(this, csb);
+		viewAddInstructor=new ViewAddInstructor(this, csb);
 	}
 	public void init() {
 		v.showGUI();
@@ -504,6 +507,45 @@ public class ControllerServer implements ActionListener, ItemListener {
 						result,
 						"Result",
 						JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(button.getText().equals("Add instructor")) {
+				ControllerServerBackListener.backButtoncallingFrom="Add instructor";
+				ViewServer.frame2.setVisible(false);
+				viewAddInstructor.showGUI();
+			}
+			else if(button.getText().equals("Add")) {
+				JTextField instIDText=viewAddInstructor.getInstTextfield();
+				String instText=instIDText.getText().toString();
+				boolean error=false;
+				if(instText=="") {
+					error=true;
+				}
+				if(error) {
+					JOptionPane.showMessageDialog((Component) e.getSource(),
+							"Please enter instructor ID into textfields",
+							"Empty text fields",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					try {
+						if(obj.addInstructor(instText)==1) 
+							JOptionPane.showMessageDialog((Component) e.getSource(),
+									"Instructor Added!",
+									"SUCCESS",
+									JOptionPane.INFORMATION_MESSAGE);
+						else 
+							JOptionPane.showMessageDialog((Component) e.getSource(),
+									"Query Failed! Check your input for duplicate instructor ID",
+									"ERROR",
+									JOptionPane.ERROR_MESSAGE);
+						ViewAddInstructor.frame1.setVisible(false);
+						ViewAddInstructor.frame1.dispose();
+						viewAddInstructor.showGUI();
+					} catch (HeadlessException | RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
 			}
 		}
 	}
