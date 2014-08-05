@@ -48,5 +48,5 @@ public interface JoinInterface extends java.rmi.Remote {
 	public void addClass(String classname) throws RemoteException;
 	public String changePassword(String uid, String oldPassword, String newPassword)  throws RemoteException;
 	public int addInstructor(String instId)  throws RemoteException;
-	public char[] getPassword(String uid) throws RemoteException;
+	public char[] getPassword(String uid, String caller) throws RemoteException;
 }

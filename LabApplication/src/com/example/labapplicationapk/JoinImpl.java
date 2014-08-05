@@ -266,11 +266,11 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		if(queryType.equals("configuration")) {
 			
 			//File files = new File(userHome+sep+"ISSP"+sep+className+sep+"Emulator_Configurations").listFiles();
-			files= new File("Emulator_Configurations").listFiles();
+			files= new File("Emulator Configuration/"+classname).listFiles();
 		}
 		else{
 			//File files = new File(userHome+sep+"ISSP"+sep+className+sep+"Malwares").listFiles();
-			files = new File("Malwares").listFiles();
+			files = new File("Malwares/"+classname).listFiles();
 		}
 		//adding every odd value as file name and even value as bytes for that file
 		for (int i = 0; i < files.length; i++) {
@@ -485,7 +485,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		return success;
 	}
 	@Override
-    public char[] getPassword(String uid) throws RemoteException {
+    public char[] getPassword(String uid, String caller) throws RemoteException {
         String password=null;
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -495,7 +495,13 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
                     "root",
                     "mysql");
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("Select pass from inst_list where uid=\""+uid+"\"");
+            ResultSet rs = null;
+            if(caller.equals("server calling")) {
+                 rs = stmt.executeQuery("Select pass from inst_list where uid=\""+uid+"\"");
+            }
+            else if(caller.equals("client calling")) {
+                rs = stmt.executeQuery("Select pass from userlist where uid=\""+uid+"\"");
+           }
             while(rs.next()){
                 password=rs.getString("pass");
             }
@@ -505,9 +511,9 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
         } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        /*if(password==null)
+        if(password==null)
         	return null;
-        else */
-        return password.toCharArray();
+        else 
+        	return password.toCharArray();
     }
 }

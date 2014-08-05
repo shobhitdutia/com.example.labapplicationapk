@@ -16,7 +16,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
 
@@ -29,14 +32,23 @@ import javax.swing.JTextField;
 public class ControllerClient implements ActionListener {
 
 	JTextField username;
+	String usernameString;
 	JPasswordField password;
 	String className;
 	ViewClient v= new ViewClient(this);
-	JoinInterface join;// = (JoinInterface) Naming.lookup("rmi://"+"bootstrapip"+"port number");
+	JoinInterface obj;// = (JoinInterface) Naming.lookup("rmi://"+"bootstrapip"+"port number");
 	Process pr;
 	Semaphore semaphore = new Semaphore(0);
 	PrintWriter writer;
+	String middlewareIP="localhost";
 
+	public ControllerClient() {
+		try {
+			obj= (JoinInterface)Naming.lookup("//"+middlewareIP+":12459/Shobhit_bootstrapObject");
+		} catch (MalformedURLException | RemoteException | NotBoundException e1) {
+			e1.printStackTrace();
+		}
+	}
 	public void init() {
 		Runnable input=new IncomingReader();
 		Thread name=new Thread(input);
@@ -59,16 +71,29 @@ public class ControllerClient implements ActionListener {
 
 			if(button_clicked.equals("Login")) {
 				username=v.username;
-				password=v.password;
-				//if(join.getUsersFromDatabase(username.getText(), password.getPassword(), userListVector)
-				//if (true){//isPasswordCorrect(username.getText(), password.getPassword())) {
-				v.showMainScreen();	
-				/*} else {
+				usernameString=username.getText().toString();
+	
+				if(usernameString.equals("")) {
 					JOptionPane.showMessageDialog((Component) e.getSource(),
-							"Invalid username or password",
-							"Login",
+							"Please enter a username",
+							"EMPTY",
 							JOptionPane.ERROR_MESSAGE);
-				}*/		
+					
+				}
+				else {
+					if (isPasswordCorrect(usernameString, v.password.getPassword())) {
+					username=v.username;
+					password=v.password;
+					v.showMainScreen();
+					username.setText("");
+					password.setText("");
+					} else {
+						JOptionPane.showMessageDialog((Component) e.getSource(),
+								"Invalid username or password",
+								"Login",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}		
 			}
 			else if(button_clicked.equals("Clear")) {
 				System.out.println("in clear");
@@ -147,10 +172,11 @@ public class ControllerClient implements ActionListener {
 		// TODO Auto-generated method stub
 		Vector fileVector = null;
 		boolean exceptionOccured=false;
-		JoinInterface obj;
 		String middlewareIP="localhost";
 		try {
-			obj = (JoinInterface)Naming.lookup("//"+middlewareIP+":12459/Shobhit_bootstrapObject");
+			
+			className=obj.getMyClassName(usernameString);
+			System.out.println("Classname of "+usernameString+"is "+className);
 			if(queryType.equals("configuration"))
 				fileVector=obj.getEmulatorConfiguration(className); 
 			else 
@@ -193,8 +219,41 @@ public class ControllerClient implements ActionListener {
 			}
 		}
 	}
-
 	private boolean isPasswordCorrect(String username, char[] password) {
+		//char[] correctPassword={'l','a','b'};
+		char[] correctPassword= null;
+		System.out.println("Username is "+username);
+		try {
+			correctPassword= obj.getPassword(username, "client calling");
+			if(correctPassword==null)
+				return false;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		System.out.println("correct pass is "+correctPassword.toString());
+		
+		//char[] correctPassword=correctPasswordString.toCharArray();
+		boolean isCorrect=true;
+		int length;
+		if (password.length != correctPassword.length) 
+			isCorrect = false;
+		else
+			for (int i = 0; i < (length=correctPassword.length>password.length?password.length:correctPassword.length); i++) {
+				//System.out.println("compating "+password[i]+"and"+correctPassword[i]); 
+				if (password[i] != correctPassword[i]) 
+					isCorrect = false;
+			}
+
+		//Zero out the password.
+		for (int i = 0; i < correctPassword.length; i++) {
+			correctPassword[i]='O';	
+		}
+		if(isCorrect)
+			return true;
+		else 
+			return false;
+	}
+	/*private boolean isPasswordCorrect(String username, char[] password) {
 		char[] correctPassword={'l','a','b'};
 		boolean isCorrect=true;
 		int length;
@@ -215,7 +274,8 @@ public class ControllerClient implements ActionListener {
 			return true;
 		else 
 			return false;
-	}
+	}*/
+	
 	public class IncomingReader implements Runnable{
 		public void run(){
 			try {

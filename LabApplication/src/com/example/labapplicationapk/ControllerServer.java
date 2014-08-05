@@ -603,7 +603,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 		char[] correctPassword= null;
 		System.out.println("Username is "+username);
 		try {
-			correctPassword= obj.getPassword(username);
+			correctPassword= obj.getPassword(username, "server calling");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
