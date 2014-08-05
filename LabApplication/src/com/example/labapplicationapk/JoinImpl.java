@@ -263,6 +263,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		File[] files;
 		//String userHome = System.getProperty("user.home");
 		//char sep=File.pathSeparatorChar;
+		System.out.println("Classname is "+classname);
 		if(queryType.equals("configuration")) {
 			
 			//File files = new File(userHome+sep+"ISSP"+sep+className+sep+"Emulator_Configurations").listFiles();
@@ -392,7 +393,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 					"root",
 					"mysql");
 			Statement stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery("Select class_name from userlist where uid = "+uid);
+			ResultSet rs = stmt.executeQuery("Select class_name from userlist where uid=\""+uid+"\"");
 			while(rs.next()){
 				className=rs.getString("class_name");
 			}
@@ -428,7 +429,7 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 
 	@Override
 	public String changePassword(String uid, String oldPassword,
-			String newPassword) {
+			String newPassword, String caller) {
 		String result = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -438,18 +439,33 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 					"root",
 					"mysql");
 			Statement stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery("Select \""+uid+"\" from inst_list where pass = \""+oldPassword+"\";");
+			ResultSet rs = null;
+			if(caller.equals("client calling")) 
+				rs = stmt.executeQuery("Select \""+uid+"\" from userlist where pass = \""+oldPassword+"\";");
+			else if(caller.equals("server calling")) 
+				rs = stmt.executeQuery("Select \""+uid+"\" from inst_list where pass = \""+oldPassword+"\";");
+				
 			if(!rs.isBeforeFirst()){
 				result="No such user name/password combination";
 			}
 			else {
-				if(stmt.executeUpdate("UPDATE inst_list SET pass=\""+newPassword+"\" where uid=\""+uid+"\" and pass=\""+oldPassword+"\";")==0) {
-				//if(stmt.executeUpdate("UPDATE inst_list SET pass=\'newPassword\' where uid=\'lab\' and pass=\'lab\';")==0) {
-			//	if(stmt.executeUpdate("INSERT INTO userlist VALUES (\""+uid+"\",\""+uid+"\",\""+newPassword+"\");")==0) {	
-				result="error";
-				}
-				else {
+				if(caller.equals("server calling")) {
+					if(stmt.executeUpdate("UPDATE inst_list SET pass=\""+newPassword+"\""
+							+ " where uid=\""+uid+"\" and pass=\""+oldPassword+"\";")==0) {
+						result="error";
+					}
+					else {
 					result="success";
+					}
+				}
+				if(caller.equals("client calling")) {
+					if(stmt.executeUpdate("UPDATE userlist SET pass=\""+newPassword+"\""
+							+ " where uid=\""+uid+"\" and pass=\""+oldPassword+"\";")==0) {
+						result="error";
+					}
+					else {
+					result="success";
+					}
 				}
 			}
 			System.out.println("result is "+result);

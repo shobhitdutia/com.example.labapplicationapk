@@ -41,8 +41,12 @@ public class ControllerClient implements ActionListener {
 	Semaphore semaphore = new Semaphore(0);
 	PrintWriter writer;
 	String middlewareIP="localhost";
+	ViewChangePasswordClient viewcpc;
+	ControllerClientBackListener ccb;
 
 	public ControllerClient() {
+		ccb=new ControllerClientBackListener();
+		viewcpc=new ViewChangePasswordClient(this, ccb);
 		try {
 			obj= (JoinInterface)Naming.lookup("//"+middlewareIP+":12459/Shobhit_bootstrapObject");
 		} catch (MalformedURLException | RemoteException | NotBoundException e1) {
@@ -164,6 +168,44 @@ public class ControllerClient implements ActionListener {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
+			}
+			else if(button.getText().equals("Change password")) {
+				ControllerClientBackListener.backButtoncallingFrom="Change password";
+				ViewClient.frame2.setVisible(false);
+				viewcpc.showGUI();
+			}
+			else if(button.getText().equals("Change!")) {
+				Vector<JTextField> textFieldVector=viewcpc.getInputVector();
+				String result = null;
+				boolean error=false;
+				for(JTextField inputField:textFieldVector) {
+					if(inputField.getText().toString()=="") {
+						error=true;
+						break;
+					}	
+				}
+				if(error) {
+					JOptionPane.showMessageDialog((Component) e.getSource(),
+							"Please enter values into all textfields",
+							"Empty text fields",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					try {
+						String oldPassword=textFieldVector.get(0).getText().toString();
+						String newPassword=textFieldVector.get(1).getText().toString();
+						result=obj.changePassword(usernameString,
+								oldPassword, 
+								newPassword, "client calling");
+					} catch (RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				JOptionPane.showMessageDialog((Component) e.getSource(),
+						result,
+						"Result",
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 	}

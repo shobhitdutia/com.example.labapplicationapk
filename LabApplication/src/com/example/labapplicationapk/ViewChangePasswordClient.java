@@ -10,19 +10,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class ViewChangePassword extends JFrame {
+public class ViewChangePasswordClient extends JFrame {
 	static JFrame frame1;
-	ControllerServer cs;
-	ControllerServerBackListener csb;
+	ControllerClient cc;
+	ControllerClientBackListener ccb;
 	JTextField userIDText;
 	JTextField oldPassText;
 	JTextField newPassText;
 	private Vector<JTextField> textFieldVector=new Vector<JTextField>();
     
 	
-	public ViewChangePassword(ControllerServer cs, ControllerServerBackListener csb) {
-		this.cs=cs;
-		this.csb=csb;
+	public ViewChangePasswordClient(ControllerClient cc, ControllerClientBackListener ccb) {
+		this.cc=cc;
+		this.ccb=ccb;
 	}
 	public void showGUI() {
 		frame1 = new JFrame("Change password");
@@ -57,9 +57,9 @@ public class ViewChangePassword extends JFrame {
         
         //Buttons
         JButton changeButton=new JButton("Change!");
-        changeButton.addActionListener(cs);
+        changeButton.addActionListener(cc);
         JButton backButton=new JButton("Back");
-        backButton.addActionListener(csb);
+        backButton.addActionListener(ccb);
         
         buttonPanel.add(changeButton);
         buttonPanel.add(backButton);

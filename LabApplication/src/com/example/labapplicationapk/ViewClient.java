@@ -15,8 +15,8 @@ public class ViewClient extends JFrame {
 	JTextField username;
 	JPasswordField password;
 	ControllerClient controllerClient;
-	JFrame frame1,frame2;
-
+	static JFrame frame1, frame2;
+	
 	Dimension d=new Dimension(100,50);
 	
 	public ViewClient(String title) {
@@ -92,6 +92,9 @@ public class ViewClient extends JFrame {
 //        terminalButton.addActionListener(controllerClient);
         JButton logoutButton=new JButton("Logout");
         logoutButton.addActionListener(controllerClient);
+        
+        JButton changePasswordButton=new JButton("Change password");
+        changePasswordButton.addActionListener(controllerClient);
 
         buttonPanel.add(downloadConfigruationButton);
         buttonPanel.add(downloadMalwareButton);
@@ -99,6 +102,7 @@ public class ViewClient extends JFrame {
         buttonPanel.add(restoreEmulatorButton);
       //  buttonPanel.add(terminalButton);
         buttonPanel.add(logoutButton);
+        buttonPanel.add(changePasswordButton);
         contentPane.add(buttonPanel, BorderLayout.CENTER);
 	}	
 }

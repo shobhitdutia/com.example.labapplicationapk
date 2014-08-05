@@ -505,9 +505,11 @@ public class ControllerServer implements ActionListener, ItemListener {
 				}
 				else {
 					try {
-						result=obj.changePassword(textFieldVector.get(0).getText().toString(),
-								textFieldVector.get(1).getText().toString(), 
-								textFieldVector.get(2).getText().toString());
+						String oldPassword=textFieldVector.get(0).getText().toString();
+						String newPassword=textFieldVector.get(1).getText().toString();
+						result=obj.changePassword(usernameString,
+								oldPassword, 
+								newPassword, "server calling");
 					} catch (RemoteException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
