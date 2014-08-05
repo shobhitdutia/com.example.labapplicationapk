@@ -28,7 +28,7 @@ import javax.swing.text.View;
 
 public class ControllerServer implements ActionListener, ItemListener {
 	//String username;;;;
-	String selectedClass;
+	String selectedClass, usernameString;
 	ViewClassList viewClassList;
 	String middlewareIP="localhost";
 	JoinInterface obj;
@@ -68,18 +68,28 @@ public class ControllerServer implements ActionListener, ItemListener {
 		if(e.getSource() instanceof JButton) {
 			JButton button =(JButton) e.getSource();
 			if(button.getText().equals("Login")) {
-
-				if (isPasswordCorrect(v.username.getText(), v.password.getPassword())) {
+				
+				usernameString=v.username.getText().toString();
+				if(usernameString.equals("")) {
+					JOptionPane.showMessageDialog((Component) e.getSource(),
+							"Please enter a username",
+							"EMPTY",
+							JOptionPane.ERROR_MESSAGE);
+					
+				}
+				else {
+					if (isPasswordCorrect(usernameString, v.password.getPassword())) {
 					username=v.username;
 					password=v.password;
 					v.showMainScreen();
 					username.setText("");
 					password.setText("");
-				} else {
-					JOptionPane.showMessageDialog((Component) e.getSource(),
-							"Invalid usernameviewClassList.frame1.setVisible(false); or password",
-							"Login",
-							JOptionPane.ERROR_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog((Component) e.getSource(),
+								"Invalid username or password",
+								"Login",
+								JOptionPane.ERROR_MESSAGE);
+					}
 				}		
 			}
 			else if(button.getText().equals("Clear")) {
@@ -589,14 +599,24 @@ public class ControllerServer implements ActionListener, ItemListener {
 		}	
 	}
 	private boolean isPasswordCorrect(String username, char[] password) {
-		char[] correctPassword={'l','a','b'};
+		//char[] correctPassword={'l','a','b'};
+		char[] correctPassword= null;
+		System.out.println("Username is "+username);
+		try {
+			correctPassword= obj.getPassword(username);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		System.out.println("correct pass is "+correctPassword.toString());
+		
+		//char[] correctPassword=correctPasswordString.toCharArray();
 		boolean isCorrect=true;
 		int length;
 		if (password.length != correctPassword.length) 
 			isCorrect = false;
 		else
 			for (int i = 0; i < (length=correctPassword.length>password.length?password.length:correctPassword.length); i++) {
-				System.out.println("compating "+password[i]+"and"+correctPassword[i]); 
+				//System.out.println("compating "+password[i]+"and"+correctPassword[i]); 
 				if (password[i] != correctPassword[i]) 
 					isCorrect = false;
 			}
@@ -605,7 +625,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 		for (int i = 0; i < correctPassword.length; i++) {
 			correctPassword[i]='O';	
 		}
-		if(username.equals("lab") && isCorrect)
+		if(isCorrect)
 			return true;
 		else 
 			return false;

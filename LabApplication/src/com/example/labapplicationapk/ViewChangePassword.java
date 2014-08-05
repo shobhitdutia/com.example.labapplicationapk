@@ -38,15 +38,15 @@ public class ViewChangePassword extends JFrame {
 	    final JPanel inputPanel = new JPanel();
 	    inputPanel.setLayout(new GridLayout(3,2));
 	    
-	    userIDText=new JTextField();
+//	    userIDText=new JTextField();
 	    oldPassText=new JTextField();
 	    newPassText=new JTextField();
 	    textFieldVector.add(userIDText);
 	    textFieldVector.add(oldPassText);
 	    textFieldVector.add(newPassText);
 	    
-	    inputPanel.add(new JLabel("Enter your old username"));
-	    inputPanel.add(userIDText);
+	    /*inputPanel.add(new JLabel("Enter your old username"));
+	    inputPanel.add(userIDText);*/
 	    inputPanel.add(new JLabel("Enter your old password"));
 	    inputPanel.add(oldPassText);
 	    inputPanel.add(new JLabel("Enter your new password"));

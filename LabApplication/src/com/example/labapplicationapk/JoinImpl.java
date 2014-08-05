@@ -484,4 +484,30 @@ public class JoinImpl extends UnicastRemoteObject implements JoinInterface {
 		}
 		return success;
 	}
+	@Override
+    public char[] getPassword(String uid) throws RemoteException {
+        String password=null;
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            Connection con;
+            con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost/radb",
+                    "root",
+                    "mysql");
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("Select pass from inst_list where uid=\""+uid+"\"");
+            while(rs.next()){
+                password=rs.getString("pass");
+            }
+            stmt.close();
+            con.close();
+            System.out.println("Password of "+uid+" returned is"+password);
+        } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        /*if(password==null)
+        	return null;
+        else */
+        return password.toCharArray();
+    }
 }
