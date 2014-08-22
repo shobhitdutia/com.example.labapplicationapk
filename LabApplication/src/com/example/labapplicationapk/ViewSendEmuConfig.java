@@ -22,8 +22,10 @@ public class ViewSendEmuConfig{
 	static Vector<JCheckBox> checkedConfigVector;
 	private JCheckBox jc;
 	ControllerServerBackListener csb;
+	ControllerServer cs;
 	
-	public ViewSendEmuConfig(ControllerServerBackListener csb) {
+	public ViewSendEmuConfig(ControllerServer cs, ControllerServerBackListener csb) {
+		this.cs=cs;
 		this.csb=csb;
 	}
 /*	public ViewSendEmuConfig(String title) {
@@ -53,7 +55,7 @@ public class ViewSendEmuConfig{
 		}
 		final JPanel buttonPanel = new JPanel();
 	 	JButton sendConfig= new JButton("Send selected configuration");
-		sendConfig.addActionListener(new ControllerServer());
+		sendConfig.addActionListener(cs);
 		JButton backButton= new JButton("Back");
 		backButton.addActionListener(csb);
 		/*backButton.addActionListener(new ActionListener() {

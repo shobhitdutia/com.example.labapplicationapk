@@ -25,12 +25,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.text.View;
 
-
 public class ControllerServer implements ActionListener, ItemListener {
 	//String username;;;;
 	String selectedClass, usernameString;
 	ViewClassList viewClassList;
-	String middlewareIP="localhost";
+	String middlewareIP="129.21.24.189";
 	JoinInterface obj;
 	JTextField username;
 	JPasswordField password;
@@ -41,22 +40,28 @@ public class ControllerServer implements ActionListener, ItemListener {
 	ViewChangePassword viewcp;
 	ViewAddInstructor viewAddInstructor;
 	ControllerServerBackListener csb;
+	ViewAddRemoveMalware varm;
+	ViewRemoveUser viewRemoveUser;
+	char sep=File.separatorChar;
 	public ControllerServer() {
 		try {
-			obj= (JoinInterface)Naming.lookup("//"+middlewareIP+":12459/Shobhit_bootstrapObject");
+			obj= (JoinInterface)Naming.lookup("//"+middlewareIP+":1099/Shobhit_bootstrapObject");
+			if(obj!=null)
+				System.out.println("object acquired");
 		} catch (MalformedURLException | RemoteException | NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		};
-
 		csb=new ControllerServerBackListener(this);
 		v= new ViewServer(this);
 		viewAddUser=new ViewAddUser(this, csb);
 		viewLog=new ViewLog(this,csb, obj);
 		viewClassList=new ViewClassList(this, csb, obj);
-		viewSendEmuConfig=new ViewSendEmuConfig(csb);
+		viewSendEmuConfig=new ViewSendEmuConfig(this,csb);
 		viewcp=new ViewChangePassword(this, csb);
 		viewAddInstructor=new ViewAddInstructor(this, csb);
+		varm=new ViewAddRemoveMalware(this, csb);
+		viewRemoveUser= new ViewRemoveUser(this, csb);
 	}
 	public void init() {
 		v.showGUI();
@@ -110,7 +115,16 @@ public class ControllerServer implements ActionListener, ItemListener {
 				viewAddUser.showGUI1();
 			}
 			else if(button.getText().equals("Remove users")) {
-				refreshUserListAndUpdateGUI(e, "delete user");
+				ControllerServerBackListener.backButtoncallingFrom="Remove users_1";
+				ViewServer.frame2.setVisible(false);
+				viewRemoveUser.showGUI1();	
+				//refreshUserListAndUpdateGUI(e, "delete user");
+			}
+			else if(button.getText().equals("Select existing class to remove")) {
+				ViewRemoveUser.frame1.setVisible(false);
+				ControllerServerBackListener.backButtoncallingFrom="Select existing class_Remove";
+				viewClassList.setCallingLocation("Remove users");
+				viewClassList.showGUI();
 			}
 			/*else if(button.getText().equals("Back")) {
 				Vector<JTextField> userListVector=ViewAddRemoveUsers.getUserList();
@@ -127,9 +141,9 @@ public class ControllerServer implements ActionListener, ItemListener {
 				//Code to send emulator config
 				//Path of avd directory
 				/**/
-
 			}
 			else if(button.getText().equals("Send selected configuration")) {
+				System.out.println("Sending");
 				selectedClass=ViewAddUser.newClassName;
 				System.out.println("Configuration class name is "+selectedClass);
 				Vector<JCheckBox> selectedConfig=ViewSendEmuConfig.getCheckedConfig();
@@ -148,6 +162,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 							JOptionPane.ERROR_MESSAGE);
 				}
 				else {
+					System.out.println("in else");
 					int index=0;
 					for(JCheckBox jc:selectedConfig) {
 						if(!jc.isSelected()) {
@@ -155,40 +170,49 @@ public class ControllerServer implements ActionListener, ItemListener {
 						}
 						index++;
 					}
+					
 					System.out.println("SelecviewClassList.frame1.setVisible(false);ted is ");
 					for (File f:fileDir) {
-						System.out.println(f.getAbsolutePath());
+						System.out.println("Abs path is:"+f.getAbsolutePath());
 					}
+					Vector<byte[]>configFileDataVector=new Vector<byte[]>();
+					byte[] buffer;
 					//Get config.ini files from each avd selected
 					String list[];
-					Vector<File> configFiles=new Vector<File>();
-					for(File f:fileDir) {
-						list=f.list();
-						for (int i = 0; i < list.length; i++) {
-							if(list[i].equals("config.ini")) {
-								configFiles.add(new File(f.getAbsolutePath()+"\\config.ini"));
-							}
-						}
-					}
-					/*System.out.println("ConviewClassList.frame1.setVisible(false);fig pahts:");
-					for(File f:configFiles) {
-						System.out.println(f.getAbsolutePath());
-					}*/
-					//send config files
-
+					//Vector<File> configFiles=new Vector<File>();
+					BufferedInputStream inputFileStream;
+					int fileIndex=-1;
 					try {
-						if(obj.sendEmulatorConfiguration(configFiles,selectedClass)==1) {
+						for(File f:fileDir) {
+							System.out.println("in loop");
+							buffer=new byte[(int) f.length()];
+							System.out.println("added11");
+							inputFileStream=new BufferedInputStream(new FileInputStream(f.getAbsolutePath()+sep+"config.ini"));
+							System.out.println("added22");
+							inputFileStream.read(buffer,0,buffer.length);
+							
+							inputFileStream.close();
+							System.out.println("added1");
+							configFileDataVector.add(buffer);
+							System.out.println("added");
+						}		
+						System.out.println("Printing fila path"+configFileDataVector.size());
+						
+						if(obj.sendEmulatorConfiguration(configFileDataVector,selectedClass)==1) {
 							JOptionPane.showMessageDialog((Component) e.getSource(),
 									"Sent successfully",
 									"Success",
 									JOptionPane.INFORMATION_MESSAGE);
 						}
 					} catch(Exception e1) {
+						/*System.out.println("error");
 						JOptionPane.showMessageDialog((Component) e.getSource(),
 								"Please check your connection",
 								"Connection error",
-								JOptionPane.ERROR_MESSAGE);
+								JOptionPane.ERROR_MESSAGE);*/
+						e1.printStackTrace();
 					}
+					configFileDataVector.removeAllElements();
 					ViewSendEmuConfig.frame1.setVisible(false);
 					ViewSendEmuConfig.frame1.dispose();
 					ViewSendEmuConfig.fileDir.removeAllElements();
@@ -200,12 +224,11 @@ public class ControllerServer implements ActionListener, ItemListener {
 			else if(button.getText().equals("Done adding")) {
 				selectedClass=ViewAddUser.newClassName;
 				System.out.println(selectedClass);
-				Vector<JTextField> userListVector=ViewAddUser.getUserList();
+				Vector<String> userListVector=ViewAddUser.getUserList();
 				//check if list is empty
 				if(userListVector.size()==0) {
-					//
 					JOptionPane.showMessageDialog((Component) e.getSource(),
-							"Please add some values to the text box!",
+							"Please add some users!",
 							"EMPTY",
 							JOptionPane.ERROR_MESSAGE);
 				}
@@ -214,7 +237,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 					//				for(JTextField jt:userListVector) {
 					System.out.println("Size of vector "+userListVector.size());
 					for(int i=0;i<userListVector.size();i++) {	
-						JTextField jt=userListVector.get(i);
+						String jt=userListVector.get(i);
 						/*if(i%2!=0) {
 							try {
 								Integer.parseInt(jt.getText());
@@ -224,7 +247,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 								break;
 							}
 						}*/
-						if(jt.getText().equals("")) {
+						if(jt.equals("")) {
 							error=true;
 							break;	
 						}
@@ -238,9 +261,9 @@ public class ControllerServer implements ActionListener, ItemListener {
 					else if(!error) {
 						try {
 
-							if(obj.addUsersToDatabase("root", "mysql", userListVector, selectedClass)==1) {
+							if(obj.addUsersToDatabase(userListVector, selectedClass)==1) {
 								JOptionPane.showMessageDialog((Component) e.getSource(),
-										"Query Successful!",
+										"Added a user!",
 										"INSERTED",
 										JOptionPane.INFORMATION_MESSAGE);
 								userListVector.removeAllElements();
@@ -270,7 +293,8 @@ public class ControllerServer implements ActionListener, ItemListener {
 
 			//
 			else if(button.getText().equals("Done deleting")) {
-				Vector<JTextField> userListVector=ViewAddRemoveUsers.getUserList();
+				selectedClass=viewRemoveUser.getExistingClassName();
+				Vector<String> userListVector=ViewRemoveUser.getUserList();
 				//check if list is empty
 				if(userListVector.size()==0) {
 					//
@@ -280,59 +304,28 @@ public class ControllerServer implements ActionListener, ItemListener {
 							JOptionPane.ERROR_MESSAGE);
 				}
 				else {
-					boolean error=false;
-					//				for(JTextField jt:userListVector) {
-					for(int i=0;i<userListVector.size();i++) {	
-						JTextField jt=userListVector.get(i);
-						if(i%2!=0) {
-							try {
-								Integer.parseInt(jt.getText());
-							} catch(NumberFormatException e1) {
-								error=true;
-								break;
-							}
+					try {
+						if(obj.deleteUsersFromDatabase(userListVector, selectedClass)==1) {
+							JOptionPane.showMessageDialog((Component) e.getSource(),
+									"Query Successful!",
+									"Deleted",
+									JOptionPane.INFORMATION_MESSAGE);
+							userListVector.removeAllElements(); //deletes textFieldVector
+							viewRemoveUser.removeAllTextboxes();//refreshes UI by deleting checkboxes
+							//ViewRemoveUser.frame1.invalidate();
+							refreshUserListAndUpdateGUI(e, "refresh user");
 						}
-						if(jt.getText().equals("")) {
-							error=true;
-							break;	
+						else {
+							JOptionPane.showMessageDialog((Component) e.getSource(),
+									"Query Failed! Check your input",
+									"EMPTY",
+									JOptionPane.INFORMATION_MESSAGE);
 						}
-					}
-					System.out.println(error);
-					if(error)
-						JOptionPane.showMessageDialog((Component) e.getSource(),
-								"Please check your input!",
-								"EMPTY",
-								JOptionPane.ERROR_MESSAGE);
-					else if(!error) {
-						String middlewareIP="localhost";
-
-						try {
-
-							if(obj.deleteUsersFromDatabase("root", "mysql", userListVector)==1) {
-								JOptionPane.showMessageDialog((Component) e.getSource(),
-										"Query Successful!",
-										"Deleted",
-										JOptionPane.INFORMATION_MESSAGE);
-								userListVector.removeAllElements();
-								ViewAddRemoveUsers.removeAllTextboxes("Remove");
-
-								ViewAddRemoveUsers.frame1.invalidate();
-								refreshUserListAndUpdateGUI(e, "refresh user");
-
-								//v.show("Remove");
-							}
-							else {
-								JOptionPane.showMessageDialog((Component) e.getSource(),
-										"Query Failed! Check your input",
-										"EMPTY",
-										JOptionPane.INFORMATION_MESSAGE);
-							}
-						} catch (RemoteException
-								| SQLException | InstantiationException
-								| IllegalAccessException | ClassNotFoundException e1) {
-							e1.printStackTrace();
-						}	    						
-					}
+					} catch (RemoteException
+							| SQLException | InstantiationException
+							| IllegalAccessException | ClassNotFoundException e1) {
+						e1.printStackTrace();
+					}	    											
 				}
 			}
 			else if(button.getText().equals("Add malware")) {
@@ -347,26 +340,25 @@ public class ControllerServer implements ActionListener, ItemListener {
 				ViewServer.frame2.setVisible(true);
 			}*/
 			else if(button.getText().equals("Done adding malware")) {
-				selectedClass=ViewAddUser.newClassName;
+				//selectedClass=ViewAddUser.newClassName;
+				selectedClass=varm.getClassName();
 				System.out.println("Add malware selected class is "+selectedClass);
 				//JFileChooser jc=ViewAddRemoveMalware.getFileChooserObject();
 				JTextField malwareName=ViewAddRemoveMalware.getMalwareTextField();
 				System.out.println(malwareName.getText());
 				//check if textBox is empty
 				if(malwareName.getText()=="") {
-					//
 					JOptionPane.showMessageDialog((Component) e.getSource(),
 							"Please add some values to the text box!",
 							"EMPTY",
 							JOptionPane.ERROR_MESSAGE);
 				}
 				else {
-
 					try {
 						File file=new File(malwareName.getText());
 						//Defines buffer in which the file will be read
 						byte buffer[]=new byte[(int)file.length()];
-						BufferedInputStream inputFileStream=new BufferedInputStream( new FileInputStream(malwareName.getText()));
+						BufferedInputStream inputFileStream=new BufferedInputStream(new FileInputStream(malwareName.getText()));
 						//Reads the file into buffer
 						System.out.println("Buffer length:"+buffer.length);
 						inputFileStream.read(buffer,0,buffer.length);
@@ -415,7 +407,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 				viewLog.frame1.setVisible(true);
 				viewLog.frame2.setVisible(false);
 			}
-			else if(button.getText().equals("Select existing class")) {
+			else if(button.getText().equals("Select existing class to add")) {
 				ViewAddUser.frame1.setVisible(false);
 				ControllerServerBackListener.backButtoncallingFrom="Select existing class";
 				viewClassList.setCallingLocation("Add users");
@@ -447,10 +439,19 @@ public class ControllerServer implements ActionListener, ItemListener {
 					viewAddUser.setExistingClassName(viewClassList.listbox.getSelectedValue().toString());
 					//ViewAddUser.frame2.setVisible(false);
 					viewAddUser.showGUI3();
-				}else if(viewClassList.callingFrom.equals("Add malware")){
+				} else if(viewClassList.callingFrom.equals("Remove users")){
+					System.out.println("Callin from remove users ");
+					ControllerServerBackListener.backButtoncallingFrom="Removing users "
+							+ "from existing class";
+					viewRemoveUser.setExistingClassName(viewClassList.listbox.getSelectedValue().toString());
+					ViewClassList.frame1.setVisible(false);
+					refreshUserListAndUpdateGUI(e, "delete user");
+				} else if(viewClassList.callingFrom.equals("Add malware")){
 					ControllerServerBackListener.backButtoncallingFrom="Add malware_2";
-					viewAddUser.setExistingClassName(viewClassList.listbox.getSelectedValue().toString());
-					v.showMalwarePage("Add");
+					varm.setClassName(viewClassList.listbox.getSelectedValue().toString());
+					System.out.println("Add malware sending selected class is "+viewClassList.listbox.getSelectedValue().toString());
+					varm.showAddMalwareList();
+					//v.showMalwarePage("Add");
 				}else if(viewClassList.callingFrom.equals("View log")){
 					ControllerServerBackListener.backButtoncallingFrom="View log_2";
 					viewLog.setClassName(viewClassList.listbox.getSelectedValue().toString());
@@ -479,6 +480,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 						System.out.println(f2.getName());
 					}
 					ViewSendEmuConfig.fileDir=fileDir;
+					System.out.println("Showing config");
 					viewSendEmuConfig.showConfiguration();
 				}
 			}
@@ -519,6 +521,7 @@ public class ControllerServer implements ActionListener, ItemListener {
 						result,
 						"Result",
 						JOptionPane.INFORMATION_MESSAGE);
+				textFieldVector.removeAllElements();
 			}
 			else if(button.getText().equals("Add instructor")) {
 				ControllerServerBackListener.backButtoncallingFrom="Add instructor";
@@ -562,26 +565,18 @@ public class ControllerServer implements ActionListener, ItemListener {
 		}
 	}
 
+	//gets users from DB and sets vector in ViewRemoveUser
 	private void refreshUserListAndUpdateGUI(ActionEvent e, String queryType) {
 		//Implement this method later
 		//Get the user list from the database
-		Vector userListVector=new Vector();
-		String middlewareIP="localhost";
-
+		Vector<String> userListVector=new Vector<String>();
 		try {
-
-			userListVector=obj.getUsersFromDatabase("root", "mysql");
+			userListVector=obj.getUsersFromDatabase(viewRemoveUser.getExistingClassName());
 			if(userListVector.size()!=0) {
-				/*JOptionPane.showMessageDialog((Component) e.getSource(),
-	                    "Query Successful!",
-	                    "Retreived",
-	                    JOptionPane.INFORMATION_MESSAGE);
-				 */System.out.println("retreival successful");
-
+				 System.out.println("retreival successful");
 				 System.out.println(userListVector);
-				 ViewAddRemoveUsers.setVectorofStudents(userListVector);
-				 ViewServer.frame2.setVisible(false);
-				 v.showAddRemovePage("Remove");
+				 ViewRemoveUser.setVectorofStudents(userListVector);
+				 viewRemoveUser.showRemoveUserList();
 			}
 			else if(queryType.equals("delete user")){
 				JOptionPane.showMessageDialog((Component) e.getSource(),
@@ -605,7 +600,9 @@ public class ControllerServer implements ActionListener, ItemListener {
 		char[] correctPassword= null;
 		System.out.println("Username is "+username);
 		try {
+			System.out.println("Getting pass");
 			correctPassword= obj.getPassword(username, "server calling");
+			System.out.println("correct pass is "+correctPassword.toString());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

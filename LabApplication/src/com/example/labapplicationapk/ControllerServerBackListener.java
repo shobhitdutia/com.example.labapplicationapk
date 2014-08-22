@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
 public class ControllerServerBackListener implements ActionListener {
@@ -49,17 +50,19 @@ public class ControllerServerBackListener implements ActionListener {
 					ViewAddUser.frame3.setVisible(false);
 					ViewAddUser.frame2.setVisible(true);
 					backButtoncallingFrom="Add class";
-					Vector<JTextField> userListVector=ViewAddUser.getUserList();
+					ViewAddUser.removeUsersFromUI();
+					/*Vector<String> userListVector=ViewAddUser.getUserList();
 					userListVector.removeAllElements();
-					//ViewAddUser.removeAllTextboxes("");
+					*///ViewAddUser.removeAllTextboxes("");
 				}
 				else if(backButtoncallingFrom.equals("Adding users to textbox from existing class")) {
 					ViewAddUser.frame3.setVisible(false);
 					ViewClassList.frame1.setVisible(true);
 					backButtoncallingFrom="Select existing class";
-					Vector<JTextField> userListVector=ViewAddUser.getUserList();
+					ViewAddUser.removeUsersFromUI();
+					/*Vector<String> userListVector=ViewAddUser.getUserList();
 					userListVector.removeAllElements();
-					//ViewAddUser.removeAllTextboxes("");
+					*///ViewAddUser.removeAllTextboxes("");
 				}
 				else if(backButtoncallingFrom.equals("Send emulator config_1")) {
 					ViewClassList.frame1.setVisible(false);
@@ -83,9 +86,20 @@ public class ControllerServerBackListener implements ActionListener {
 					ViewServer.frame2.setVisible(true);*/
 				}
 				else if(backButtoncallingFrom.equals("Remove users_1")) {
-					
+					ViewRemoveUser.frame1.setVisible(false);
+					ViewServer.frame2.setVisible(true);
 				}
-				
+				else if(backButtoncallingFrom.equals("Select existing class_Remove")) {
+					ViewClassList.frame1.setVisible(false);
+					ViewRemoveUser.frame1.setVisible(true);
+					backButtoncallingFrom="Remove users_1";
+				}
+				else if(backButtoncallingFrom.equals("Removing users from existing class")) {
+					ViewRemoveUser.frame2.setVisible(false);
+					ViewClassList.frame1.setVisible(true);
+					backButtoncallingFrom="Select existing class_Remove";
+					ViewRemoveUser.removeUsersFromUI();
+				}
 				else if(backButtoncallingFrom.equals("View log_1")) {
 					ViewServer.frame2.setVisible(true);
 					ViewClassList.frame1.setVisible(false);

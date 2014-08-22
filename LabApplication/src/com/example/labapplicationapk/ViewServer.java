@@ -21,8 +21,8 @@ public class ViewServer extends JFrame {
 	JPasswordField password;
 	static JFrame frame1;
 	static JFrame frame2;
-	ViewAddRemoveUsers addRemoveUserObject;
-	ViewAddRemoveMalware addRemoveMalwareObject;
+	ViewRemoveUser addRemoveUserObject;
+//	ViewAddRemoveMalware addRemoveMalwareObject;
 	//ViewSendEmuConfig sendEmuConfig;
 	Dimension d=new Dimension(100,50);
 	ControllerServer cs;
@@ -127,20 +127,20 @@ public class ViewServer extends JFrame {
         buttonPanel.add(addInstructorButton);
         contentPane.add(buttonPanel, BorderLayout.CENTER);
 	}	
-	public void showAddRemovePage(String queryType) {
-		addRemoveUserObject=new ViewAddRemoveUsers();
+	/*public void showAddRemovePage(String queryType) {
+		addRemoveUserObject=new ViewRemoveUser();
 		if(queryType=="Add") {}
 //			addRemoveUserObject.showAddUserList();
 		else 
 			addRemoveUserObject.showRemoveUserList();
-	}
-	public void showMalwarePage(String queryType) {
+	}*/
+	/*public void showMalwarePage(String queryType) {
 		addRemoveMalwareObject=new ViewAddRemoveMalware(new ControllerServerBackListener(cs));
 		if(queryType=="Add")
 			addRemoveMalwareObject.showAddMalwareList();
 		else 
 			addRemoveMalwareObject.showRemoveMalwareList();;
-	}
+	}*/
 
 	/*public void showSendEmuConfig() {
 		sendEmuConfig=new ViewSendEmuConfig();

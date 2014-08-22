@@ -30,7 +30,6 @@ import javax.swing.JTextField;
 
 
 public class ControllerClient implements ActionListener {
-
 	JTextField username;
 	String usernameString;
 	JPasswordField password;
@@ -40,15 +39,19 @@ public class ControllerClient implements ActionListener {
 	Process pr;
 	Semaphore semaphore = new Semaphore(0);
 	PrintWriter writer;
-	String middlewareIP="localhost";
+	String middlewareIP="129.21.24.189";
 	ViewChangePasswordClient viewcpc;
 	ControllerClientBackListener ccb;
-
+	String userHome = System.getProperty("user.home");
+	char sep=File.separatorChar;
+	
 	public ControllerClient() {
 		ccb=new ControllerClientBackListener();
 		viewcpc=new ViewChangePasswordClient(this, ccb);
 		try {
-			obj= (JoinInterface)Naming.lookup("//"+middlewareIP+":12459/Shobhit_bootstrapObject");
+			System.out.println("looking up");
+			obj= (JoinInterface)Naming.lookup("//"+middlewareIP+":1099/Shobhit_bootstrapObject");
+			System.out.println("looked up");
 		} catch (MalformedURLException | RemoteException | NotBoundException e1) {
 			e1.printStackTrace();
 		}
@@ -137,8 +140,8 @@ public class ControllerClient implements ActionListener {
 			else if(button_clicked.equals("Backup Emulator")) {
 
 				String user=System.getProperty("user.name");
-				File srcFolder = new File("C:/Users/"+user+"/.android/avd");
-				File destFolder = new File("C:/Users/"+user+"/.android/avdBackup");
+				File srcFolder = new File(userHome+sep+".android"+sep+"avd");
+				File destFolder = new File(userHome+sep+".android"+sep+"avdBackup");
 
 				try{
 					copyFolder(srcFolder,destFolder);
@@ -149,16 +152,18 @@ public class ControllerClient implements ActionListener {
 			}
 			else if(button_clicked.equals("Restore Emulator")) {
 				String user=System.getProperty("user.name"); 
-				File destFolder = new File("/home/"+user+"/.android/avd");
-				File srcFolder = new File("/home/"+user+"/.android/avdBackup");
-
+				//File destFolder = new File("/home/"+user+"/.android/avd");
+				//File srcFolder = new File("/home/"+user+"/.android/avdBackup");
+				
+				File destFolder = new File(userHome+sep+".android"+sep+"avd");
+				File srcFolder = new File(userHome+sep+".android"+sep+"avdBackup");
 				try{
 					copyFolder(srcFolder,destFolder);
 				}catch(IOException e1){
 					e1.printStackTrace();
 				}
 
-			}else if(button_clicked.equals("Open Terminal")){
+			}/*else if(button_clicked.equals("Open Terminal")){
 
 				String command= "/usr/bin/xterm"; 
 				Runtime rt = Runtime.getRuntime(); 	
@@ -168,7 +173,7 @@ public class ControllerClient implements ActionListener {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-			}
+			}*/
 			else if(button.getText().equals("Change password")) {
 				ControllerClientBackListener.backButtoncallingFrom="Change password";
 				ViewClient.frame2.setVisible(false);
@@ -206,6 +211,7 @@ public class ControllerClient implements ActionListener {
 						result,
 						"Result",
 						JOptionPane.INFORMATION_MESSAGE);
+				textFieldVector.removeAllElements();
 			}
 		}
 	}
@@ -238,9 +244,9 @@ public class ControllerClient implements ActionListener {
 				while(i<fileVector.size()) {
 					File dir;
 					if(queryType.equals("configuration"))
-						dir = new File("Client_Emu_Configuration");
+						dir = new File(userHome+sep+"ISSP"+sep+"Client_Emu_Configuration");
 					else 
-						dir = new File("Client_Malware");
+						dir = new File(userHome+sep+"ISSP"+sep+"Client_Malware");
 		 			if(!dir.exists())
 		 				dir.mkdir();
 		 			 String fileName=(String) fileVector.get(i++);

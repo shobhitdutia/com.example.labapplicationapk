@@ -12,6 +12,7 @@ public class ConfigruationListner implements Runnable{
 			while(true)
 			{
 				Socket connectionSocket = welcomeSocket.accept();
+				System.out.println("In Config listener");
 				ConfigruationReceiver reciver = new ConfigruationReceiver(connectionSocket);
 				Thread th = new Thread(reciver);
 				th.start();

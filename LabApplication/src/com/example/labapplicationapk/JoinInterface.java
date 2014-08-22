@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
 /* 
@@ -30,15 +31,12 @@ public interface JoinInterface extends java.rmi.Remote {
 	 * @throws InstantiationException 
 	 */
 
-	public int addUsersToDatabase(String username,
-			String password, Vector<JTextField> userListVector,String className) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
+	public int addUsersToDatabase(Vector<String> userListVector,String className) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
 	
-	public int deleteUsersFromDatabase(String username,
-			String password, Vector<JTextField> userListVector) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
-	public Vector getUsersFromDatabase(String username,
-			String password) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
+	public int deleteUsersFromDatabase(Vector<String> userListVector, String selectedClass) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
+	public Vector<String> getUsersFromDatabase(String className) throws java.rmi.RemoteException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException;
 	public int addMalware(String fileName, byte[] buffer,String classname) throws java.rmi.RemoteException;
-	public int sendEmulatorConfiguration(Vector<File> v,String classname)throws java.rmi.RemoteException, IOException;
+	public int sendEmulatorConfiguration(Vector<byte[]>buffer,String classname)throws java.rmi.RemoteException, IOException;
 	public Vector getEmulatorConfiguration(String classname) throws RemoteException,IOException;
 	public Vector getMalware(String classname) throws java.rmi.RemoteException, IOException;
 	public List<String> getLogs(String classname) throws RemoteException;

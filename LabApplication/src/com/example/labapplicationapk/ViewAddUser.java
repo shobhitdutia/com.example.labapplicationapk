@@ -5,12 +5,17 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,14 +28,15 @@ public class ViewAddUser extends JFrame {
 	JTextField classnameTextField;
 	ControllerServer cs;
 	ControllerServerBackListener csb;
-    private static Vector vectorOfStudents;
     private static Vector <JCheckBox>checkBoxVector;
-    int textBoxNumber=0;
+    //int textBoxNumber=0;
     private Box vBox;
     private Box hBox;
+    private Box userVBox;
     private JButton btnAdd;
     private static Vector<JTextField> textFieldVector=new Vector<JTextField>();
     static String newClassName;
+	private static JFileChooser openFile;
     
 	public ViewAddUser(ControllerServer cs, ControllerServerBackListener csb) {
 		this.cs=cs;
@@ -53,15 +59,13 @@ public class ViewAddUser extends JFrame {
         //Buttons
         JButton addButton=new JButton("Add class");
         addButton.addActionListener(cs);
-        JButton selectButton=new JButton("Select existing class");
+        JButton selectButton=new JButton("Select existing class to add");
         selectButton.addActionListener(cs);
         JButton backButton=new JButton("Back");
         backButton.addActionListener(csb);
-        
         buttonPanel.add(addButton);
         buttonPanel.add(selectButton);
         buttonPanel.add(backButton);
-
         contentPane.add(buttonPanel);
 	}
 	public void showGUI2() {
@@ -96,7 +100,7 @@ public class ViewAddUser extends JFrame {
         JButton b = new JButton("Just fake button");
 	}
 	public void showGUI3() {
-		frame3 = new ViewAddRemoveUsers("ADD Users");
+		frame3 = new JFrame("ADD Users");
         frame3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         addComponentsToAddUser_3(frame3.getContentPane());
         frame3.setLocationRelativeTo(null);
@@ -106,41 +110,50 @@ public class ViewAddUser extends JFrame {
 	}
 	
 	private void addComponentsToAddUser_3(final Container contentPane) {
-		vectorOfStudents=new Vector();
-		checkBoxVector=new Vector<JCheckBox>();
-		//Remove this for loop later	
-		int length=4;
-/*		//Get student name and ID in a vector
-		for (int i = 0; i <=length-2; i+=2) {	
-			vectorOfStudents.add("SampleName");
-			vectorOfStudents.add("SampleID");
-		}
-*/		for (int i = 0; i < 2; i++) {
-			vectorOfStudents.add("SampleName"+i);	
-		}
+		//vBox = Box.createVerticalBox(); 
+		userVBox= Box.createVerticalBox(); 
+		JButton btnBrowse=new JButton("Browse");
+		checkBoxVector=new Vector<JCheckBox>();	    
+		btnBrowse.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+            	System.out.println(e.getSource());
+        		openFile = new JFileChooser();	
+         		openFile.showOpenDialog(null);   		
+        		parseFile();
+        		for (int i = 0; i <checkBoxVector.size(); i++) {
+        			userVBox.add(checkBoxVector.get(i));     			
+        		}
+        		frame3.pack();
+            }
 
-		final JPanel labelPanel = new JPanel();
-		labelPanel.setLayout(new GridLayout(3,3));
-		labelPanel.add(new JLabel(""));
-		labelPanel.add(new JLabel("User name"));
-//		labelPanel.add(new JLabel("UserID"));
-		
-		//Add checkboxes and label names with student name and ID
-		int countOfCheckBoxes=0;
-//		for (int i = 0; i <= length-2; i+=2) {
-		for (int i = 0; i <vectorOfStudents.size(); i++) {
-			checkBoxVector.add(new JCheckBox());
-			labelPanel.add(checkBoxVector.get(countOfCheckBoxes++));
-			/*labelPanel.add(new JLabel((String)vectorOfStudents.get(i)));
-			labelPanel.add(new JLabel(String.valueOf(vectorOfStudents.get(i+1))));*/
-			labelPanel.add(new JLabel((String)vectorOfStudents.get(i)));
-		}
-	 
-		System.out.println(textFieldVector.size());
-		vBox = Box.createVerticalBox(); 
-		JButton selectFile = new JButton("Select file");
-		selectFile.addActionListener(cs);
-		
+			private void parseFile() {
+				BufferedReader br=null;
+    			try {
+    				File selectStudents=new File(openFile.getSelectedFile().getAbsolutePath());
+    				System.out.println(selectStudents.getAbsolutePath());
+					String studentName;
+    				br=new BufferedReader(new FileReader(selectStudents));
+					while((studentName = br.readLine()) != null) { 
+						JCheckBox studentNameJCheckBox=new JCheckBox(studentName);
+						checkBoxVector.add(studentNameJCheckBox);
+						System.out.println(studentName); 
+					} 
+				} catch (IOException |NullPointerException e1) {
+					e1.printStackTrace();
+				}
+    			finally {
+    				if(br!=null)
+						try {
+							br.close();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+    			}
+			}
+
+        });
 		btnAdd = new JButton("Add new user");
 		JButton buttonBack = new JButton("Back");
 		buttonBack.addActionListener(csb);
@@ -152,13 +165,11 @@ public class ViewAddUser extends JFrame {
             public void actionPerformed(ActionEvent e)
             {
             	System.out.println("Called");
-            	textFieldVector.add(new JTextField());
-//        		textFieldVector.add(new JTextField());
+            	JTextField jt=new JTextField();
+            	textFieldVector.add(jt);
         		hBox=Box.createHorizontalBox();
-        		hBox.add(textFieldVector.get(textBoxNumber));
-//        		hBox.add(textFieldVector.get(textBoxNumber+1));
-        		textBoxNumber++;
-        		vBox.add(hBox);
+        		hBox.add(jt);
+        		userVBox.add(hBox);
         		frame3.pack();
             }
 
@@ -167,15 +178,12 @@ public class ViewAddUser extends JFrame {
 		
         //ButtonPanel
         final JPanel buttonPanel=new JPanel();
-        buttonPanel.add(selectFile);
+        buttonPanel.add(btnBrowse);
         buttonPanel.add(btnAdd);
         buttonPanel.add(buttonDone);
         buttonPanel.add(buttonBack);
-       
-        //adding everything to container
-        contentPane.add(labelPanel, BorderLayout.NORTH);
-        
-        contentPane.add(vBox, BorderLayout.CENTER);
+        contentPane.add(userVBox, BorderLayout.NORTH);
+        //contentPane.add(vBox, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 	}
 	
@@ -185,29 +193,34 @@ public class ViewAddUser extends JFrame {
 	public void setExistingClassName(String newClassName){
 		this.newClassName=newClassName;
 	}
-	public static void setVectorofStudents(Vector v) {
+	/*public static void setVectorofStudents(Vector v) {
 		vectorOfStudents=v;
-	}
+	}*/
 	/*public void removeAllTextboxes() {	
 		frame3.setVisible(false);
 		frame3.dispose();
 		this.showGUI3();
 	}*/
-	public static Vector<JTextField> getUserList() {
+	public static Vector<String> getUserList() {
+	    Vector<String> studentJCheckBoxVector=new Vector<String>();
 		for (int i = 0; i < checkBoxVector.size(); i++) {
+			
 			JCheckBox jc=checkBoxVector.get(i);
 			if(jc.isSelected()) {
-				textFieldVector.add(new JTextField((String)vectorOfStudents.get(i)));
+				studentJCheckBoxVector.add(jc.getText().toString());
 	//        	textFieldVector.add(new JTextField(String.valueOf(vectorOfStudents.get((i*2)+1))));
 			}
 		}
-		System.out.println("Size of vector is "+textFieldVector.size());
-		System.out.println(vectorOfStudents);
+		for(JTextField jTextField:textFieldVector) {
+			studentJCheckBoxVector.add(jTextField.getText().toString());
+		}
+		System.out.println("Size of vector is "+studentJCheckBoxVector.size());
+		//System.out.println(vectorOfStudents);
 		
 		//textFieldVector.add(e)
 		checkBoxVector.removeAllElements();
-		vectorOfStudents.removeAllElements();
-		return textFieldVector;
+		textFieldVector.removeAllElements();
+		return studentJCheckBoxVector;
 	}
 	/*public static void removeAllTextboxes(String frameName) {	
 		frame1.setVisible(false);
@@ -217,4 +230,8 @@ public class ViewAddUser extends JFrame {
 		else if(frameName=="Remove")
 			new ViewAddRemoveUsers().showRemoveUserList();
 	}*/
+	public static void removeUsersFromUI() {
+		textFieldVector.removeAllElements();
+		checkBoxVector.removeAllElements();
+	}
 }

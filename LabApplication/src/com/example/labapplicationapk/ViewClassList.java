@@ -39,17 +39,14 @@ public class ViewClassList {
 		frame1.pack();
 		frame1.setVisible(true);
 	}
-	
 	public void setCallingLocation(String temp){
 		callingFrom=temp;
 	}
-
 	private void addComponentsToListFrame(final Container contentPane) {
 		//labels and text box panel
 		final JPanel inputPanel = new JPanel();
 		final JPanel buttonPanel = new JPanel();
 		final JPanel textPanel = new JPanel();
-		
 		List<String> list;
 		try {
 			list = service.getClasses();
